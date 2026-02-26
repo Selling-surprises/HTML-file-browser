@@ -10,7 +10,6 @@
 第一步：准备工作
 确保你的仓库根目录包含以下文件结构：
 
-text
 你的仓库/
 ├── index.html          # 前端页面（我们之前提供的代码）
 ├── html/               # 存放所有 HTML 文件的文件夹
@@ -129,3 +128,4 @@ https://Selling-surprises.github.io/HTML-file-browser/
 常见问题
 Q：工作流运行失败，提示“Not Found”或“404”
 原因：GitHub Pages 未启用，或未配置为 GitHub Actions 模式。请严格按照第四步操作，并确保在 Settings → Pages 中选择了 GitHub Actions 作为 Source。
+
