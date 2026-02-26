@@ -23,13 +23,12 @@
     └── workflows/
         └── deploy.yml  # GitHub Actions 工作流
 ```
-```
 
-### 2. 创建工作流文件
+### **2**、创建工作流文件
 
 创建 `.github/workflows/deploy.yml`：
 
-```yaml
+```markdown
 name: Generate file list and deploy to Pages
 
 on:
@@ -94,13 +93,13 @@ jobs:
         uses: actions/deploy-pages@v4
 ```
 
-### 3. 启用 GitHub Pages
+### 3、启用 GitHub Pages
 
 1. 进入仓库 **Settings** → **Pages**
 2. **Build and deployment** → Source 选择 **GitHub Actions**
 3. 保存设置
 
-### 4. 部署完成
+### 4、部署完成
 
 推送代码后，访问：
 
@@ -197,9 +196,8 @@ const htmlDir = '你的目录名';  // 默认为 'html'
 ---
 
 <p align="center">
-  Made with ❤️ by {username}https://github.com/{username}">{username}>
+  Made with ❤️ by <a href="https://github.com/{username}">{username}</a>
 </p>
 ```
 
 **注意**：使用前请将 `{username}` 和 `{repo}` 替换为你的 GitHub 用户名和仓库名。
-
