@@ -1,0 +1,59 @@
+name: Generate file list and deploy to Pages
+
+on:
+  push:
+    branches: [ "main" ]  # 触发分支，可改为你的默认分支
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Generate filelist.json
+        run: |
+          node -e "
+          const fs = require('fs');
+          const path = require('path');
+          const htmlDir = 'html';
+          const results = [];
+          function walk(dir, base = '') {
+            const list = fs.readdirSync(dir);
+            for (const file of list) {
+              const fullPath = path.join(dir, file);
+              const stat = fs.statSync(fullPath);
+              if (stat.isDirectory()) {
+                walk(fullPath, path.join(base, file));
+              } else if (file.endsWith('.html') || file.endsWith('.htm')) {
+                results.push(path.join(base, file));
+              }
+            }
+          }
+          if (fs.existsSync(htmlDir)) {
+            walk(htmlDir, 'html');
+          }
+          fs.writeFileSync('filelist.json', JSON.stringify(results, null, 2));
+          console.log('Generated filelist.json with', results.length, 'entries.');
+          "
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'  # 上传整个仓库（包含 html 文件夹、index.html、filelist.json）
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
