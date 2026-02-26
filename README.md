@@ -1,9 +1,7 @@
 ```markdown
 # 📁 HTML File Browser
 
-[![Deploy](https://github.com/{username}/{repo}/actions/workflows/deploy.yml/badge.svg)](https://github.com/{username}/{repo}/actions/workflows/deploy.yml)
-[![Pages](https://img.shields.io/badge/GitHub%20Pages-Live-brightgreen)](https://{username}.github.io/{repo}/)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+![Deploy](https://github.com/Selling-surprises/HTML-file-browser/blob/main/svg/markmap.svg)
 
 > 🚀 一个基于 GitHub Actions 自动部署的 HTML 文件浏览器，支持自动扫描目录、生成文件列表并部署到 GitHub Pages。
 
