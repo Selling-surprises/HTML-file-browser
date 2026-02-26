@@ -24,7 +24,7 @@
         .card {
             max-width: 800px;
             width: 100%;
-            max-height: 100%;
+            height: 100%;            /* 卡片占满视口（减去 padding） */
             background: white;
             border-radius: 28px;
             box-shadow: 0 20px 40px rgba(0,10,30,0.1);
@@ -43,14 +43,7 @@
             gap: 10px;
             flex-wrap: wrap;
         }
-        h1 small {
-            font-size: 0.8rem;
-            background: #e8ecf2;
-            color: #2c3e5c;
-            padding: 4px 12px;
-            border-radius: 30px;
-            font-weight: 400;
-        }
+        /* 移除了 small 标签，原“由 filelist.json 驱动”已删除 */
         .sub {
             color: #3f5575;
             margin-top: 0;
@@ -127,7 +120,7 @@
             border-radius: 24px;
             background: white;
             overflow-y: auto;          /* 文件列表区域滚动 */
-            flex-shrink: 1;
+            flex: 1;                   /* 占据剩余全部高度 */
             min-height: 0;              /* 防止flex溢出 */
         }
         .file-item {
@@ -205,6 +198,16 @@
             text-align: center;
             border: 1px dashed #b2c2d6;
         }
+        .github-note {
+            margin-top: 12px;
+            font-size: 0.8rem;
+            color: #5a6f8c;
+            background: #e9eef5;
+            padding: 8px 16px;
+            border-radius: 40px;
+            text-align: center;
+            border: 1px solid #ccd9e8;
+        }
         .footer {
             margin-top: 16px;
             text-align: right;
@@ -226,7 +229,7 @@
     <div class="card">
         <h1>
             📂 静态文件浏览器
-            <small>由 filelist.json 驱动</small>
+            <!-- 原“由 filelist.json 驱动”提示已移除 -->
         </h1>
         <div class="sub">
             ⚡ 文件列表由 GitHub Actions 自动生成，每次推送后更新。
@@ -248,6 +251,7 @@
             <span class="file-count" id="fileCount">0 个文件</span>
         </div>
 
+        <!-- 文件列表区域自动占据剩余高度，显示更多条目 -->
         <div id="fileListContainer" class="file-list">
             <div class="loading-message" id="loadingIndicator">
                 <div class="spinner"></div>
@@ -255,9 +259,13 @@
             </div>
         </div>
 
+        <!-- 明确说明依赖 GitHub（保留，有助于用户理解） -->
+        <div class="github-note">
+            🌐 本页面依赖 GitHub 服务：文件列表来自 <kbd>filelist.json</kbd>（由 Actions 自动生成），并通过 GitHub Pages 部署。
+        </div>
+
         <div class="fallback-note">
-            💡 本页面通过 <kbd>filelist.json</kbd> 获取文件列表，该文件由 GitHub Actions 自动生成。<br>
-            点击文件名将在新窗口打开对应的 HTML 文件（使用相对路径）。
+            💡 点击文件名将在新窗口打开对应的 HTML 文件（使用相对路径）。
         </div>
         <div class="footer">
             ⚙️ 支持中文搜索 · 自动隐藏 .html 后缀
@@ -304,9 +312,12 @@
                 }
 
                 const ul = document.createElement('ul');
-                ul.className = 'file-list';
-                ul.style.background = 'white';
-                ul.style.borderRadius = '24px';
+                // 不添加额外类，避免样式冲突；父容器 .file-list 已处理滚动
+                ul.style.background = 'transparent';
+                ul.style.border = 'none';
+                ul.style.borderRadius = '0';
+                ul.style.padding = '0';
+                ul.style.margin = '0';
 
                 filtered.forEach((item) => {
                     const li = document.createElement('li');
@@ -333,6 +344,7 @@
                     ul.appendChild(li);
                 });
 
+                // 清空容器并添加新 ul
                 fileListContainer.innerHTML = '';
                 fileListContainer.appendChild(ul);
             }
