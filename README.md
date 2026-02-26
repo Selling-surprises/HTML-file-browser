@@ -206,9 +206,3 @@ const htmlDir = '你的目录名';  // 默认为 'html'
   Made with ❤️ by <a href="https://github.com/{username}">{username}</a>
 </p>
 ```
-
-**使用方法**：
-1. 复制全部内容
-2. 保存为 `README.md` 文件
-3. 替换 `{username}` 和 `{repo}` 为你的 GitHub 用户名和仓库名
-4. 放入仓库根目录提交
