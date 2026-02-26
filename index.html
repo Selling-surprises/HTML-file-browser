@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📂 HTML文件浏览器</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        }
+        body {
+            background: #f4f7fb;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+        }
+        .card {
+            max-width: 800px;
+            width: 100%;
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 20px 40px rgba(0,10,30,0.1);
+            padding: 28px 24px;
+            transition: all 0.2s ease;
+        }
+        h1 {
+            font-size: 1.9rem;
+            font-weight: 500;
+            margin: 0 0 8px 0;
+            color: #0b1a33;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        h1 small {
+            font-size: 0.8rem;
+            background: #e8ecf2;
+            color: #2c3e5c;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-weight: 400;
+        }
+        .sub {
+            color: #3f5575;
+            margin-top: 0;
+            margin-bottom: 28px;
+            font-size: 1rem;
+            border-left: 4px solid #8a9bb8;
+            padding-left: 16px;
+            background: #f0f4fa;
+            border-radius: 0 12px 12px 0;
+            line-height: 1.5;
+        }
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .search-wrapper {
+            flex: 1;
+            min-width: 220px;
+            position: relative;
+        }
+        .search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6f7d98;
+            font-size: 1.1rem;
+            pointer-events: none;
+        }
+        .search-input {
+            width: 100%;
+            padding: 12px 20px 12px 50px;
+            border: 2px solid #d9e1ec;
+            border-radius: 40px;
+            font-size: 1rem;
+            background: white;
+            transition: 0.2s;
+            color: #0b1a33;
+        }
+        .search-input:focus {
+            border-color: #1e2f4a;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(30,47,74,0.1);
+        }
+        .search-input:disabled {
+            background: #eef2f7;
+            border-color: #ccd5e2;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        .info-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin: 12px 0 10px 0;
+            font-size: 0.9rem;
+            color: #4d627a;
+            flex-wrap: wrap;
+        }
+        .file-count {
+            background: #dee5f0;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+        .file-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            border: 1px solid #e2e8f0;
+            border-radius: 24px;
+            overflow: hidden;
+            background: white;
+            max-height: 460px;
+            overflow-y: auto;
+            transition: background 0.1s;
+        }
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 22px;
+            background: white;
+            border-bottom: 1px solid #edf2f7;
+            cursor: pointer;
+            transition: background 0.15s, padding-left 0.1s;
+            color: #0a1a2f;
+        }
+        .file-item:last-child {
+            border-bottom: none;
+        }
+        .file-item:hover {
+            background: #f0f5fd;
+            padding-left: 28px;
+        }
+        .file-item:active {
+            background: #e3eaf3;
+        }
+        .file-icon {
+            font-size: 1.4rem;
+            margin-right: 18px;
+            color: #4c6a9c;
+            width: 28px;
+            text-align: center;
+        }
+        .file-name {
+            font-size: 1.05rem;
+            font-weight: 500;
+            word-break: break-word;
+            flex: 1;
+        }
+        .empty-message {
+            padding: 48px 24px;
+            text-align: center;
+            color: #6a7f9e;
+            font-style: italic;
+            background: #f9fcff;
+            border-radius: 24px;
+        }
+        .loading-message {
+            padding: 40px 24px;
+            text-align: center;
+            color: #2c3e5c;
+            background: #f9fcff;
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+        .spinner {
+            border: 3px solid #e2e8f0;
+            border-top: 3px solid #1e2f4a;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .fallback-note {
+            margin-top: 20px;
+            font-size: 0.85rem;
+            color: #6f7d98;
+            background: #eef2f8;
+            padding: 12px 18px;
+            border-radius: 30px;
+            text-align: center;
+            border: 1px dashed #b2c2d6;
+        }
+        .footer {
+            margin-top: 16px;
+            text-align: right;
+            color: #8a9bb8;
+            font-size: 0.8rem;
+        }
+        .config-area {
+            background: #f0f5fa;
+            border-radius: 20px;
+            padding: 12px 18px;
+            margin-bottom: 16px;
+            font-size: 0.9rem;
+            color: #2c3e5c;
+            border: 1px solid #dde3ec;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>
+            📂 静态文件浏览器
+            <small>由 filelist.json 驱动</small>
+        </h1>
+        <div class="sub">
+            ⚡ 文件列表由 GitHub Actions 自动生成，每次推送后更新。
+        </div>
+
+        <div class="config-area" id="configDisplay">
+            🔧 正在加载文件清单...
+        </div>
+
+        <div class="toolbar">
+            <div class="search-wrapper">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" id="searchInput" placeholder="搜索文件名..." disabled>
+            </div>
+        </div>
+
+        <div class="info-bar">
+            <span id="folderHint">📁 读取 filelist.json</span>
+            <span class="file-count" id="fileCount">0 个文件</span>
+        </div>
+
+        <div id="fileListContainer" class="file-list">
+            <div class="loading-message" id="loadingIndicator">
+                <div class="spinner"></div>
+                <span>正在加载文件列表...</span>
+            </div>
+        </div>
+
+        <div class="fallback-note">
+            💡 本页面通过 <kbd>filelist.json</kbd> 获取文件列表，该文件由 GitHub Actions 自动生成。<br>
+            点击文件名将在新窗口打开对应的 HTML 文件（使用相对路径）。
+        </div>
+        <div class="footer">
+            ⚙️ 支持中文搜索 · 自动隐藏 .html 后缀
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const searchInput = document.getElementById('searchInput');
+            const fileListContainer = document.getElementById('fileListContainer');
+            const folderHint = document.getElementById('folderHint');
+            const fileCountSpan = document.getElementById('fileCount');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const configDisplay = document.getElementById('configDisplay');
+
+            let filesData = [];          // { displayName, path }
+            let currentFilter = '';
+
+            // 辅助：移除 .html / .htm 后缀
+            function removeHtmlSuffix(filename) {
+                return filename.replace(/\.html?$/i, '');
+            }
+
+            // 渲染列表
+            function renderFileList() {
+                const filterLower = currentFilter.toLowerCase();
+                const filtered = filesData.filter(item => 
+                    item.displayName.toLowerCase().includes(filterLower)
+                );
+
+                fileCountSpan.textContent = filtered.length + ' 个文件';
+
+                if (filesData.length === 0) {
+                    // 无数据且加载已完成
+                    if (loadingIndicator.style.display === 'none') {
+                        fileListContainer.innerHTML = `<div class="empty-message">📭 没有找到任何 HTML 文件</div>`;
+                    }
+                    return;
+                }
+
+                if (filtered.length === 0) {
+                    fileListContainer.innerHTML = `<div class="empty-message">🔍 没有匹配的标题 · 试试其他关键词</div>`;
+                    return;
+                }
+
+                const ul = document.createElement('ul');
+                ul.className = 'file-list';
+                ul.style.background = 'white';
+                ul.style.borderRadius = '24px';
+
+                filtered.forEach((item) => {
+                    const li = document.createElement('li');
+                    li.className = 'file-item';
+                    li.setAttribute('role', 'button');
+                    li.setAttribute('tabindex', '0');
+
+                    const iconSpan = document.createElement('span');
+                    iconSpan.className = 'file-icon';
+                    iconSpan.textContent = '📄';
+                    li.appendChild(iconSpan);
+
+                    const nameSpan = document.createElement('span');
+                    nameSpan.className = 'file-name';
+                    nameSpan.textContent = item.displayName;
+                    li.appendChild(nameSpan);
+
+                    li.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        // 使用相对路径打开（与仓库结构一致）
+                        window.open(item.path, '_blank');
+                    });
+
+                    ul.appendChild(li);
+                });
+
+                fileListContainer.innerHTML = '';
+                fileListContainer.appendChild(ul);
+            }
+
+            // 获取 filelist.json
+            async function loadFileList() {
+                try {
+                    const response = await fetch('filelist.json');
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status} — 可能是 filelist.json 不存在`);
+                    }
+                    const paths = await response.json(); // 例如 ["html/a.html", "html/sub/b.htm"]
+
+                    // 过滤确保是 html 文件（但 json 应该只包含 html，此处可做二次校验）
+                    const htmlPaths = paths.filter(p => p.toLowerCase().endsWith('.html') || p.toLowerCase().endsWith('.htm'));
+
+                    if (htmlPaths.length === 0) {
+                        folderHint.textContent = '📁 /html 文件夹内无 HTML 文件';
+                    } else {
+                        folderHint.textContent = `📁 已加载 ${htmlPaths.length} 个文件`;
+                    }
+
+                    filesData = htmlPaths.map(p => {
+                        // 提取显示名称：去掉 "html/" 前缀和 .html 后缀
+                        let displayName = p;
+                        if (p.startsWith('html/')) {
+                            displayName = p.substring(5); // 去掉 'html/'
+                        }
+                        displayName = removeHtmlSuffix(displayName);
+                        return {
+                            displayName: displayName,
+                            path: p  // 完整路径，用于打开
+                        };
+                    });
+
+                    // 按显示名称排序（中文友好）
+                    filesData.sort((a, b) => a.displayName.localeCompare(b.displayName, 'zh-CN'));
+
+                    loadingIndicator.style.display = 'none';
+                    searchInput.disabled = false;
+                    searchInput.value = '';
+                    currentFilter = '';
+
+                    renderFileList();
+                } catch (err) {
+                    console.error(err);
+                    folderHint.textContent = '❌ 加载失败';
+                    loadingIndicator.innerHTML = `<div class="empty-message">❌ 无法加载 filelist.json<br>${err.message}<br>请确认文件是否存在且网络正常。</div>`;
+                    searchInput.disabled = true;
+                }
+            }
+
+            // 搜索处理
+            function onSearchInput(e) {
+                currentFilter = e.target.value.trim();
+                renderFileList();
+            }
+
+            // 初始化
+            function init() {
+                searchInput.addEventListener('input', onSearchInput);
+                loadFileList();
+            }
+
+            init();
+        })();
+    </script>
+</body>
+</html>
