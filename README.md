@@ -1,4 +1,4 @@
-🚀 一个基于 GitHub Actions 自动部署的 HTML 文件浏览器，支持自动扫描目录、生成文件列表并部署到 GitHub Pages。
+ 🚀 一个基于 GitHub Actions 自动部署的 HTML 文件浏览器，支持自动扫描目录、生成文件列表并部署到 GitHub Pages。
 
 ## ✨ 功能特性
 
@@ -12,21 +12,24 @@
 
 ### **1**、创建仓库结构
 
-**你的仓库/**
-├── index.html     # 前端页面（主入口）
-├── **html/**        # 存放所有 HTML 文件的文件夹
-│ ├── example1.html
-│ └── **subfolder/**
-│ └── example2.html
-└── **.github/**
-  └── **workflows/**
-    └── deploy.yml # GitHub Actions 工作流
+```markdown
+你的仓库/
+├── index.html          # 前端页面（主入口）
+├── html/               # 存放所有 HTML 文件的文件夹
+│   ├── example1.html
+│   └── subfolder/
+│       └── example2.html
+└── .github/
+    └── workflows/
+        └── deploy.yml  # GitHub Actions 工作流
+ ```
+```
 
-### **2**、创建工作流文件
+### 2. 创建工作流文件
 
 创建 `.github/workflows/deploy.yml`：
 
-```
+```yaml
 name: Generate file list and deploy to Pages
 
 on:
@@ -91,13 +94,13 @@ jobs:
         uses: actions/deploy-pages@v4
 ```
 
-### **3**、启用 GitHub Pages
+### 3. 启用 GitHub Pages
 
 1. 进入仓库 **Settings** → **Pages**
-2. **Build and deployment** → Source 选择 GitHub Actions
+2. **Build and deployment** → Source 选择 **GitHub Actions**
 3. 保存设置
 
-### **4**、部署完成
+### 4. 部署完成
 
 推送代码后，访问：
 
@@ -107,16 +110,18 @@ https://<你的用户名>.github.io/<仓库名>/
 
 ## 📁 项目结构
 
-.             
-├── **.github/**       
-│  └── **workflows/**    
-│    └── deploy.yml   # 自动部署工作流
-├── **html/**          # 你的 HTML 文件目录
-│  ├── index.html
-│  └── ...
-├── index.html       # 主页面（文件浏览器 UI）
-├── filelist.json      # 自动生成的文件列表
-└── README.md       # 本文件
+```
+.
+├── .github/
+│   └── workflows/
+│       └── deploy.yml      # 自动部署工作流
+├── html/                   # 你的 HTML 文件目录
+│   ├── index.html
+│   └── ...
+├── index.html              # 主页面（文件浏览器 UI）
+├── filelist.json           # 自动生成的文件列表
+└── README.md               # 本文件
+```
 
 ## 🛠️ 自定义配置
 
@@ -124,7 +129,7 @@ https://<你的用户名>.github.io/<仓库名>/
 
 编辑 `.github/workflows/deploy.yml` 中的 `htmlDir` 变量：
 
-```
+```javascript
 const htmlDir = '你的目录名';  // 默认为 'html'
 ```
 
@@ -132,42 +137,48 @@ const htmlDir = '你的目录名';  // 默认为 'html'
 
 修改文件过滤条件：
 
-```
+```javascript
 // 添加更多扩展名
 } else if (file.endsWith('.html') || file.endsWith('.htm') || file.endsWith('.svg')) {
 ```
 
 ## 🐛 常见问题
 
-工作流运行失败，提示 "404"
+<details>
+<summary><b>❓ 工作流运行失败，提示 "404"</b></summary>
 
-**原因：**GitHub Pages 未启用或未配置为 GitHub Actions 模式。
+**原因**：GitHub Pages 未启用或未配置为 GitHub Actions 模式。
 
-**解决：**
-
+**解决**：
 1. 进入 Settings → Pages
 2. Source 选择 **GitHub Actions**
 3. 重新运行工作流
 
-文件列表没有更新
+</details>
 
-**原因：**`filelist.json` 生成失败或缓存问题。
+<details>
+<summary><b>❓ 文件列表没有更新</b></summary>
 
-**解决：**
+**原因**：`filelist.json` 生成失败或缓存问题。
 
+**解决**：
 1. 检查 `html/` 目录是否存在
 2. 确认文件扩展名为 `.html` 或 `.htm`
 3. 手动触发工作流重新运行
 
-页面显示空白
+</details>
 
-**原因：**`index.html` 入口文件缺失或路径错误。
+<details>
+<summary><b>❓ 页面显示空白</b></summary>
 
-**解决：**
+**原因**：`index.html` 入口文件缺失或路径错误。
 
+**解决**：
 1. 确认仓库根目录有 `index.html`
 2. 检查浏览器控制台是否有 404 错误
 3. 确认 `filelist.json` 已正确生成
+
+</details>
 
 ## 🤝 贡献
 
@@ -181,6 +192,13 @@ const htmlDir = '你的目录名';  // 默认为 'html'
 
 ## 📄 许可证
 
-本项目基于 [MIT](#) 许可证开源。
+本项目基于 [MIT](LICENSE) 许可证开源。
 
-Made with ❤️ by [{username}](https://github.com/{username})
+---
+
+<p align="center">
+  Made with ❤️ by <a href="https://github.com/{username}">{username}</a>
+</p>
+```
+
+**注意**：使用前请将 `{username}` 和 `{repo}` 替换为你的 GitHub 用户名和仓库名。
