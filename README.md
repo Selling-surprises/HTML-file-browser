@@ -1,35 +1,46 @@
-使用 GitHub Actions 自动部署 HTML 文件浏览器
-本教程将帮助你：
+```markdown
+# 📁 HTML File Browser
 
-在仓库中创建 GitHub Actions 工作流文件（.github/workflows/deploy.yml）
+[![Deploy](https://github.com/{username}/{repo}/actions/workflows/deploy.yml/badge.svg)](https://github.com/{username}/{repo}/actions/workflows/deploy.yml)
+[![Pages](https://img.shields.io/badge/GitHub%20Pages-Live-brightgreen)](https://{username}.github.io/{repo}/)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-启用 GitHub Pages 并通过 Actions 自动部署
+> 🚀 一个基于 GitHub Actions 自动部署的 HTML 文件浏览器，支持自动扫描目录、生成文件列表并部署到 GitHub Pages。
 
-实现每次推送代码后，自动扫描 /html 文件夹，生成 filelist.json 并更新在线页面
+## ✨ 功能特性
 
-第一步：准备工作
-确保你的仓库根目录包含以下文件结构：
+- 📂 **自动扫描** - 自动扫描 `html/` 目录下的所有 HTML 文件
+- 🔄 **实时同步** - 每次推送代码自动更新文件列表
+- 🌐 **在线访问** - 通过 GitHub Pages 在线浏览 HTML 文件
+- 📱 **响应式设计** - 支持移动端和桌面端访问
+- ⚡ **零配置** - 开箱即用，无需复杂设置
 
+## 🚀 快速开始
+
+### 1. 创建仓库结构
+
+```
 你的仓库/
-├── index.html          # 前端页面（我们之前提供的代码）
+├── index.html          # 前端页面（主入口）
 ├── html/               # 存放所有 HTML 文件的文件夹
-│   ├── 示例1.html
-│   └── 子文件夹/
-│       └── 示例2.html
-└── 其他文件（如 README 等）
-第二步：创建 GitHub Actions 工作流文件
-在仓库根目录下创建文件夹 .github/workflows（如果还没有）。
+│   ├── example1.html
+│   └── subfolder/
+│       └── example2.html
+└── .github/
+    └── workflows/
+        └── deploy.yml  # GitHub Actions 工作流
+```
 
-在该文件夹内新建一个文件，命名为 deploy.yml。
+### 2. 创建工作流文件
 
-将以下内容复制到 deploy.yml 中：
+创建 `.github/workflows/deploy.yml`：
 
-yaml
+```yaml
 name: Generate file list and deploy to Pages
 
 on:
   push:
-    branches: [ "main" ]  # 如果你的默认分支是 master，请改为 master
+    branches: [ main ]  # 根据你的默认分支调整
 
 jobs:
   build:
@@ -57,6 +68,7 @@ jobs:
           const path = require('path');
           const htmlDir = 'html';
           const results = [];
+          
           function walk(dir, base = '') {
             const list = fs.readdirSync(dir);
             for (const file of list) {
@@ -69,63 +81,134 @@ jobs:
               }
             }
           }
+          
           if (fs.existsSync(htmlDir)) {
             walk(htmlDir, 'html');
           }
+          
           fs.writeFileSync('filelist.json', JSON.stringify(results, null, 2));
-          console.log('Generated filelist.json with', results.length, 'entries.');
+          console.log('✅ Generated filelist.json with', results.length, 'entries.');
           "
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.'  # 上传整个仓库（包含生成的 filelist.json 和所有静态文件）
+          path: '.'
 
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-注意：如果你的默认分支不是 main（例如是 master），请将 branches 中的 main 改为你的分支名。
+```
 
-第三步：提交并推送代码
-将上述更改提交到你的仓库（可以通过 Git 命令或直接在 GitHub 网页上操作）。推送后，GitHub Actions 会自动运行一次工作流，但此时可能会因为 Pages 未启用而失败——我们下一步将解决这个问题。
+### 3. 启用 GitHub Pages
 
-第四步：启用 GitHub Pages 并配置为 GitHub Actions
-打开你的 GitHub 仓库页面，点击顶部的 Settings 标签。
+1. 进入仓库 **Settings** → **Pages**
+2. **Build and deployment** → Source 选择 **GitHub Actions**
+3. 保存设置
 
-在左侧边栏中，点击 Pages。
+### 4. 部署完成
 
-在 Build and deployment 部分，找到 Source 选项：
+推送代码后，访问：
 
-点击下拉菜单，选择 GitHub Actions。
-
-（不要选择“Deploy from a branch”）
-
-页面会自动保存，无需其他操作。
-
-https://docs.github.com/assets/cb-12742/images/help/pages/pages-source-setting.png
-图片仅为示意，实际界面可能略有不同，但关键选项是“GitHub Actions”。
-
-第五步：重新运行工作流
-设置完成后，GitHub Actions 需要重新运行一次才能成功部署。有两种方法：
-
-重新推送一次代码：修改任意文件（例如 README.md），再次提交。
-
-手动重跑：进入仓库的 Actions 标签页，找到之前失败的工作流，点击右侧的 Re-run all jobs。
-
-等待工作流执行完毕，状态变为绿色（成功）。
-
-第六步：访问你的在线页面
-部署成功后，你的网站会发布在：
-
-text
+```
 https://<你的用户名>.github.io/<仓库名>/
-例如，如果你的用户名是 Selling-surprises，仓库名是 HTML-file-browser，则访问：
+```
 
-text
-https://Selling-surprises.github.io/HTML-file-browser/
-点击任意文件，应该能在新窗口打开对应的 HTML 页面。
+## 📁 项目结构
 
-常见问题
-Q：工作流运行失败，提示“Not Found”或“404”
-原因：GitHub Pages 未启用，或未配置为 GitHub Actions 模式。请严格按照第四步操作，并确保在 Settings → Pages 中选择了 GitHub Actions 作为 Source。
+```
+.
+├── .github/
+│   └── workflows/
+│       └── deploy.yml      # 自动部署工作流
+├── html/                   # 你的 HTML 文件目录
+│   ├── index.html
+│   └── ...
+├── index.html              # 主页面（文件浏览器 UI）
+├── filelist.json           # 自动生成的文件列表
+└── README.md               # 本文件
+```
 
+## 🛠️ 自定义配置
+
+### 修改扫描目录
+
+编辑 `.github/workflows/deploy.yml` 中的 `htmlDir` 变量：
+
+```javascript
+const htmlDir = '你的目录名';  // 默认为 'html'
+```
+
+### 支持更多文件类型
+
+修改文件过滤条件：
+
+```javascript
+// 添加更多扩展名
+} else if (file.endsWith('.html') || file.endsWith('.htm') || file.endsWith('.svg')) {
+```
+
+## 🐛 常见问题
+
+<details>
+<summary><b>❓ 工作流运行失败，提示 "404"</b></summary>
+
+**原因**：GitHub Pages 未启用或未配置为 GitHub Actions 模式。
+
+**解决**：
+1. 进入 Settings → Pages
+2. Source 选择 **GitHub Actions**
+3. 重新运行工作流
+
+</details>
+
+<details>
+<summary><b>❓ 文件列表没有更新</b></summary>
+
+**原因**：`filelist.json` 生成失败或缓存问题。
+
+**解决**：
+1. 检查 `html/` 目录是否存在
+2. 确认文件扩展名为 `.html` 或 `.htm`
+3. 手动触发工作流重新运行
+
+</details>
+
+<details>
+<summary><b>❓ 页面显示空白</b></summary>
+
+**原因**：`index.html` 入口文件缺失或路径错误。
+
+**解决**：
+1. 确认仓库根目录有 `index.html`
+2. 检查浏览器控制台是否有 404 错误
+3. 确认 `filelist.json` 已正确生成
+
+</details>
+
+## 🤝 贡献
+
+欢迎提交 Issue 和 Pull Request！
+
+1. Fork 本仓库
+2. 创建你的分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
+5. 打开 Pull Request
+
+## 📄 许可证
+
+本项目基于 [MIT](LICENSE) 许可证开源。
+
+---
+
+<p align="center">
+  Made with ❤️ by <a href="https://github.com/{username}">{username}</a>
+</p>
+```
+
+**使用方法**：
+1. 复制全部内容
+2. 保存为 `README.md` 文件
+3. 替换 `{username}` 和 `{repo}` 为你的 GitHub 用户名和仓库名
+4. 放入仓库根目录提交
