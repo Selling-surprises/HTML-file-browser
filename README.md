@@ -10,7 +10,7 @@
 
 ## 🚀 快速开始
 
-### **1**创建仓库结构
+### **1**、创建仓库结构
 
 **你的仓库/**
 ├── index.html     # 前端页面（主入口）
@@ -22,7 +22,7 @@
   └── **workflows/**
     └── deploy.yml # GitHub Actions 工作流
 
-### **2**创建工作流文件
+### **2**、创建工作流文件
 
 创建 `.github/workflows/deploy.yml`：
 
@@ -91,13 +91,13 @@ jobs:
         uses: actions/deploy-pages@v4
 ```
 
-### **3**启用 GitHub Pages
+### **3**、启用 GitHub Pages
 
 1. 进入仓库 **Settings** → **Pages**
 2. **Build and deployment** → Source 选择 GitHub Actions
 3. 保存设置
 
-### **4**部署完成
+### **4**、部署完成
 
 推送代码后，访问：
 
