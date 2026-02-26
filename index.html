@@ -3,16 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📂 HTML文件浏览器</title>
+    <title>📂 HTML 文件浏览器</title>
     <style>
         * {
             box-sizing: border-box;
             font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
         }
+        html, body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;        /* 禁用浏览器窗口滚动条 */
+        }
         body {
             background: #f4f7fb;
-            margin: 0;
-            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -21,11 +24,14 @@
         .card {
             max-width: 800px;
             width: 100%;
+            max-height: 100%;
             background: white;
             border-radius: 28px;
             box-shadow: 0 20px 40px rgba(0,10,30,0.1);
             padding: 28px 24px;
-            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;         /* 防止卡片整体滚动 */
         }
         h1 {
             font-size: 1.9rem;
@@ -119,11 +125,10 @@
             margin: 0;
             border: 1px solid #e2e8f0;
             border-radius: 24px;
-            overflow: hidden;
             background: white;
-            max-height: 460px;
-            overflow-y: auto;
-            transition: background 0.1s;
+            overflow-y: auto;          /* 文件列表区域滚动 */
+            flex-shrink: 1;
+            min-height: 0;              /* 防止flex溢出 */
         }
         .file-item {
             display: flex;
@@ -271,7 +276,7 @@
             let filesData = [];          // { displayName, path }
             let currentFilter = '';
 
-            // 辅助：移除 .html / .htm 后缀
+            // 辅助：移除 .html / .htm 后缀（大小写不敏感）
             function removeHtmlSuffix(filename) {
                 return filename.replace(/\.html?$/i, '');
             }
