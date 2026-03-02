@@ -34,12 +34,12 @@
 
 创建 `.github/workflows/deploy.yml`：
 
-```markdown
+```yaml
 name: Generate file list and deploy to Pages
 
 on:
   push:
-    branches: [ main ]  # 根据你的默认分支调整
+    branches: [ "main" ]  # 触发分支，可改为你的默认分支
 
 jobs:
   build:
@@ -67,7 +67,6 @@ jobs:
           const path = require('path');
           const htmlDir = 'html';
           const results = [];
-          
           function walk(dir, base = '') {
             const list = fs.readdirSync(dir);
             for (const file of list) {
@@ -80,19 +79,17 @@ jobs:
               }
             }
           }
-          
           if (fs.existsSync(htmlDir)) {
             walk(htmlDir, 'html');
           }
-          
           fs.writeFileSync('filelist.json', JSON.stringify(results, null, 2));
-          console.log('✅ Generated filelist.json with', results.length, 'entries.');
+          console.log('Generated filelist.json with', results.length, 'entries.');
           "
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.'
+          path: '.'  # 上传整个仓库（包含 html 文件夹、index.html、filelist.json）
 
       - name: Deploy to GitHub Pages
         id: deployment
@@ -207,6 +204,7 @@ const htmlDir = '你的目录名';  // 默认为 'html'
 ```
 
 **注意**：使用前请将 `{username}` 和 `{repo}` 替换为你的 GitHub 用户名和仓库名。
+
 
 
 
