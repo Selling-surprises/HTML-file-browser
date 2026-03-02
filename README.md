@@ -1,4 +1,10 @@
+## 项目简介
+
 🚀 一个基于 GitHub Actions 自动部署的 HTML 文件浏览器，支持自动扫描目录、生成文件列表并部署到 GitHub Pages。
+
+## 工作流架构图
+
+![CI Workflow Diagram](./.github/workflows/markmap.svg)
 
 ## ✨ 功能特性
 
@@ -201,3 +207,4 @@ const htmlDir = '你的目录名';  // 默认为 'html'
 ```
 
 **注意**：使用前请将 `{username}` 和 `{repo}` 替换为你的 GitHub 用户名和仓库名。
+
