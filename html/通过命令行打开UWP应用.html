@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>通过命令行打开UWP应用</title>
+  
+  <style>
+    .code-theme-atom-one-dark pre code.hljs{display:block;overflow-x:auto;padding:1em}.code-theme-atom-one-dark code.hljs{padding:3px 5px}.code-theme-atom-one-dark .hljs{color:#abb2bf;background:#282c34}.code-theme-atom-one-dark .hljs-comment,.code-theme-atom-one-dark .hljs-quote{color:#5c6370;font-style:italic}.code-theme-atom-one-dark .hljs-doctag,.code-theme-atom-one-dark .hljs-formula,.code-theme-atom-one-dark .hljs-keyword{color:#c678dd}.code-theme-atom-one-dark .hljs-deletion,.code-theme-atom-one-dark .hljs-name,.code-theme-atom-one-dark .hljs-section,.code-theme-atom-one-dark .hljs-selector-tag,.code-theme-atom-one-dark .hljs-subst{color:#e06c75}.code-theme-atom-one-dark .hljs-literal{color:#56b6c2}.code-theme-atom-one-dark .hljs-addition,.code-theme-atom-one-dark .hljs-attribute,.code-theme-atom-one-dark .hljs-meta .hljs-string,.code-theme-atom-one-dark .hljs-regexp,.code-theme-atom-one-dark .hljs-string{color:#98c379}.code-theme-atom-one-dark .hljs-attr,.code-theme-atom-one-dark .hljs-number,.code-theme-atom-one-dark .hljs-selector-attr,.code-theme-atom-one-dark .hljs-selector-class,.code-theme-atom-one-dark .hljs-selector-pseudo,.code-theme-atom-one-dark .hljs-template-variable,.code-theme-atom-one-dark .hljs-type,.code-theme-atom-one-dark .hljs-variable{color:#d19a66}.code-theme-atom-one-dark .hljs-bullet,.code-theme-atom-one-dark .hljs-link,.code-theme-atom-one-dark .hljs-meta,.code-theme-atom-one-dark .hljs-selector-id,.code-theme-atom-one-dark .hljs-symbol,.code-theme-atom-one-dark .hljs-title{color:#61aeee}.code-theme-atom-one-dark .hljs-built_in,.code-theme-atom-one-dark .hljs-class .hljs-title,.code-theme-atom-one-dark .hljs-title.class_{color:#e6c07b}.code-theme-atom-one-dark .hljs-emphasis{font-style:italic}.code-theme-atom-one-dark .hljs-strong{font-weight:700}.code-theme-atom-one-dark .hljs-link{text-decoration:underline}
+.code-theme-atom-one-dark pre code.hljs{display:block;overflow-x:auto;padding:1em}.code-theme-atom-one-dark code.hljs{padding:3px 5px}.code-theme-atom-one-dark .hljs{color:#abb2bf;background:#282c34}.code-theme-atom-one-dark .hljs-comment,.code-theme-atom-one-dark .hljs-quote{color:#5c6370;font-style:italic}.code-theme-atom-one-dark .hljs-doctag,.code-theme-atom-one-dark .hljs-formula,.code-theme-atom-one-dark .hljs-keyword{color:#c678dd}.code-theme-atom-one-dark .hljs-deletion,.code-theme-atom-one-dark .hljs-name,.code-theme-atom-one-dark .hljs-section,.code-theme-atom-one-dark .hljs-selector-tag,.code-theme-atom-one-dark .hljs-subst{color:#e06c75}.code-theme-atom-one-dark .hljs-literal{color:#56b6c2}.code-theme-atom-one-dark .hljs-addition,.code-theme-atom-one-dark .hljs-attribute,.code-theme-atom-one-dark .hljs-meta .hljs-string,.code-theme-atom-one-dark .hljs-regexp,.code-theme-atom-one-dark .hljs-string{color:#98c379}.code-theme-atom-one-dark .hljs-attr,.code-theme-atom-one-dark .hljs-number,.code-theme-atom-one-dark .hljs-selector-attr,.code-theme-atom-one-dark .hljs-selector-class,.code-theme-atom-one-dark .hljs-selector-pseudo,.code-theme-atom-one-dark .hljs-template-variable,.code-theme-atom-one-dark .hljs-type,.code-theme-atom-one-dark .hljs-variable{color:#d19a66}.code-theme-atom-one-dark .hljs-bullet,.code-theme-atom-one-dark .hljs-link,.code-theme-atom-one-dark .hljs-meta,.code-theme-atom-one-dark .hljs-selector-id,.code-theme-atom-one-dark .hljs-symbol,.code-theme-atom-one-dark .hljs-title{color:#61aeee}.code-theme-atom-one-dark .hljs-built_in,.code-theme-atom-one-dark .hljs-class .hljs-title,.code-theme-atom-one-dark .hljs-title.class_{color:#e6c07b}.code-theme-atom-one-dark .hljs-emphasis{font-style:italic}.code-theme-atom-one-dark .hljs-strong{font-weight:700}.code-theme-atom-one-dark .hljs-link{text-decoration:underline}
+.code-theme-gradient-dark pre code.hljs{display:block;overflow-x:auto;padding:1em}.code-theme-gradient-dark code.hljs{padding:3px 5px}.code-theme-gradient-dark .hljs{background-color:#652487;background-image:linear-gradient(160deg,#652487 0,#443ac3 35%,#0174b7 68%,#04988e 100%);color:#e7e4eb}.code-theme-gradient-dark .hljs-subtr{color:#e7e4eb}.code-theme-gradient-dark .hljs-comment,.code-theme-gradient-dark .hljs-doctag,.code-theme-gradient-dark .hljs-meta,.code-theme-gradient-dark .hljs-quote{color:#af8dd9}.code-theme-gradient-dark .hljs-attr,.code-theme-gradient-dark .hljs-regexp,.code-theme-gradient-dark .hljs-selector-id,.code-theme-gradient-dark .hljs-selector-tag,.code-theme-gradient-dark .hljs-tag,.code-theme-gradient-dark .hljs-template-tag{color:#aefbff}.code-theme-gradient-dark .hljs-bullet,.code-theme-gradient-dark .hljs-params,.code-theme-gradient-dark .hljs-selector-class{color:#f19fff}.code-theme-gradient-dark .hljs-keyword,.code-theme-gradient-dark .hljs-meta .hljs-keyword,.code-theme-gradient-dark .hljs-section,.code-theme-gradient-dark .hljs-symbol,.code-theme-gradient-dark .hljs-type{color:#17fc95}.code-theme-gradient-dark .hljs-addition,.code-theme-gradient-dark .hljs-link,.code-theme-gradient-dark .hljs-number{color:#c5fe00}.code-theme-gradient-dark .hljs-string{color:#38c0ff}.code-theme-gradient-dark .hljs-addition,.code-theme-gradient-dark .hljs-attribute{color:#e7ff9f}.code-theme-gradient-dark .hljs-template-variable,.code-theme-gradient-dark .hljs-variable{color:#e447ff}.code-theme-gradient-dark .hljs-built_in,.code-theme-gradient-dark .hljs-class,.code-theme-gradient-dark .hljs-formula,.code-theme-gradient-dark .hljs-function,.code-theme-gradient-dark .hljs-name,.code-theme-gradient-dark .hljs-title{color:#ffc800}.code-theme-gradient-dark .hljs-deletion,.code-theme-gradient-dark .hljs-literal,.code-theme-gradient-dark .hljs-selector-pseudo{color:#ff9e44}.code-theme-gradient-dark .hljs-emphasis,.code-theme-gradient-dark .hljs-quote{font-style:italic}.code-theme-gradient-dark .hljs-keyword,.code-theme-gradient-dark .hljs-params,.code-theme-gradient-dark .hljs-section,.code-theme-gradient-dark .hljs-selector-class,.code-theme-gradient-dark .hljs-selector-id,.code-theme-gradient-dark .hljs-selector-tag,.code-theme-gradient-dark .hljs-strong,.code-theme-gradient-dark .hljs-template-tag{font-weight:700}
+.code-theme-gradient-dark pre code.hljs{display:block;overflow-x:auto;padding:1em}.code-theme-gradient-dark code.hljs{padding:3px 5px}.code-theme-gradient-dark .hljs{background-color:#652487;background-image:linear-gradient(160deg,#652487 0,#443ac3 35%,#0174b7 68%,#04988e 100%);color:#e7e4eb}.code-theme-gradient-dark .hljs-subtr{color:#e7e4eb}.code-theme-gradient-dark .hljs-comment,.code-theme-gradient-dark .hljs-doctag,.code-theme-gradient-dark .hljs-meta,.code-theme-gradient-dark .hljs-quote{color:#af8dd9}.code-theme-gradient-dark .hljs-attr,.code-theme-gradient-dark .hljs-regexp,.code-theme-gradient-dark .hljs-selector-id,.code-theme-gradient-dark .hljs-selector-tag,.code-theme-gradient-dark .hljs-tag,.code-theme-gradient-dark .hljs-template-tag{color:#aefbff}.code-theme-gradient-dark .hljs-bullet,.code-theme-gradient-dark .hljs-params,.code-theme-gradient-dark .hljs-selector-class{color:#f19fff}.code-theme-gradient-dark .hljs-keyword,.code-theme-gradient-dark .hljs-meta .hljs-keyword,.code-theme-gradient-dark .hljs-section,.code-theme-gradient-dark .hljs-symbol,.code-theme-gradient-dark .hljs-type{color:#17fc95}.code-theme-gradient-dark .hljs-addition,.code-theme-gradient-dark .hljs-link,.code-theme-gradient-dark .hljs-number{color:#c5fe00}.code-theme-gradient-dark .hljs-string{color:#38c0ff}.code-theme-gradient-dark .hljs-addition,.code-theme-gradient-dark .hljs-attribute{color:#e7ff9f}.code-theme-gradient-dark .hljs-template-variable,.code-theme-gradient-dark .hljs-variable{color:#e447ff}.code-theme-gradient-dark .hljs-built_in,.code-theme-gradient-dark .hljs-class,.code-theme-gradient-dark .hljs-formula,.code-theme-gradient-dark .hljs-function,.code-theme-gradient-dark .hljs-name,.code-theme-gradient-dark .hljs-title{color:#ffc800}.code-theme-gradient-dark .hljs-deletion,.code-theme-gradient-dark .hljs-literal,.code-theme-gradient-dark .hljs-selector-pseudo{color:#ff9e44}.code-theme-gradient-dark .hljs-emphasis,.code-theme-gradient-dark .hljs-quote{font-style:italic}.code-theme-gradient-dark .hljs-keyword,.code-theme-gradient-dark .hljs-params,.code-theme-gradient-dark .hljs-section,.code-theme-gradient-dark .hljs-selector-class,.code-theme-gradient-dark .hljs-selector-id,.code-theme-gradient-dark .hljs-selector-tag,.code-theme-gradient-dark .hljs-strong,.code-theme-gradient-dark .hljs-template-tag{font-weight:700}
+.code-theme-github pre code.hljs{display:block;overflow-x:auto;padding:1em}.code-theme-github code.hljs{padding:3px 5px}.code-theme-github /*!
+.code-theme-github Theme: GitHub
+.code-theme-github Description: Light theme as seen on github.com
+.code-theme-github Author: github.com
+  Maintainer: @Hirse
+.code-theme-github Updated: 2021-05-15
+
+.code-theme-github Outdated base version: https://github.com/primer/github-syntax-light
+.code-theme-github Current colors taken from GitHub's CSS
+.code-theme-github */.hljs{color:#24292e;background:#fff}.code-theme-github .hljs-doctag,.code-theme-github .hljs-keyword,.code-theme-github .hljs-meta .hljs-keyword,.code-theme-github .hljs-template-tag,.code-theme-github .hljs-template-variable,.code-theme-github .hljs-type,.code-theme-github .hljs-variable.language_{color:#d73a49}.code-theme-github .hljs-title,.code-theme-github .hljs-title.class_,.code-theme-github .hljs-title.class_.inherited__,.code-theme-github .hljs-title.function_{color:#6f42c1}.code-theme-github .hljs-attr,.code-theme-github .hljs-attribute,.code-theme-github .hljs-literal,.code-theme-github .hljs-meta,.code-theme-github .hljs-number,.code-theme-github .hljs-operator,.code-theme-github .hljs-selector-attr,.code-theme-github .hljs-selector-class,.code-theme-github .hljs-selector-id,.code-theme-github .hljs-variable{color:#005cc5}.code-theme-github .hljs-meta .hljs-string,.code-theme-github .hljs-regexp,.code-theme-github .hljs-string{color:#032f62}.code-theme-github .hljs-built_in,.code-theme-github .hljs-symbol{color:#e36209}.code-theme-github .hljs-code,.code-theme-github .hljs-comment,.code-theme-github .hljs-formula{color:#6a737d}.code-theme-github .hljs-name,.code-theme-github .hljs-quote,.code-theme-github .hljs-selector-pseudo,.code-theme-github .hljs-selector-tag{color:#22863a}.code-theme-github .hljs-subst{color:#24292e}.code-theme-github .hljs-section{color:#005cc5;font-weight:700}.code-theme-github .hljs-bullet{color:#735c0f}.code-theme-github .hljs-emphasis{color:#24292e;font-style:italic}.code-theme-github .hljs-strong{color:#24292e;font-weight:700}.code-theme-github .hljs-addition{color:#22863a;background-color:#f0fff4}.code-theme-github .hljs-deletion{color:#b31d28;background-color:#ffeef0}
+.code-theme-github pre code.hljs{display:block;overflow-x:auto;padding:1em}.code-theme-github code.hljs{padding:3px 5px}.code-theme-github /*!
+.code-theme-github Theme: GitHub
+.code-theme-github Description: Light theme as seen on github.com
+.code-theme-github Author: github.com
+  Maintainer: @Hirse
+.code-theme-github Updated: 2021-05-15
+
+.code-theme-github Outdated base version: https://github.com/primer/github-syntax-light
+.code-theme-github Current colors taken from GitHub's CSS
+.code-theme-github */.hljs{color:#24292e;background:#fff}.code-theme-github .hljs-doctag,.code-theme-github .hljs-keyword,.code-theme-github .hljs-meta .hljs-keyword,.code-theme-github .hljs-template-tag,.code-theme-github .hljs-template-variable,.code-theme-github .hljs-type,.code-theme-github .hljs-variable.language_{color:#d73a49}.code-theme-github .hljs-title,.code-theme-github .hljs-title.class_,.code-theme-github .hljs-title.class_.inherited__,.code-theme-github .hljs-title.function_{color:#6f42c1}.code-theme-github .hljs-attr,.code-theme-github .hljs-attribute,.code-theme-github .hljs-literal,.code-theme-github .hljs-meta,.code-theme-github .hljs-number,.code-theme-github .hljs-operator,.code-theme-github .hljs-selector-attr,.code-theme-github .hljs-selector-class,.code-theme-github .hljs-selector-id,.code-theme-github .hljs-variable{color:#005cc5}.code-theme-github .hljs-meta .hljs-string,.code-theme-github .hljs-regexp,.code-theme-github .hljs-string{color:#032f62}.code-theme-github .hljs-built_in,.code-theme-github .hljs-symbol{color:#e36209}.code-theme-github .hljs-code,.code-theme-github .hljs-comment,.code-theme-github .hljs-formula{color:#6a737d}.code-theme-github .hljs-name,.code-theme-github .hljs-quote,.code-theme-github .hljs-selector-pseudo,.code-theme-github .hljs-selector-tag{color:#22863a}.code-theme-github .hljs-subst{color:#24292e}.code-theme-github .hljs-section{color:#005cc5;font-weight:700}.code-theme-github .hljs-bullet{color:#735c0f}.code-theme-github .hljs-emphasis{color:#24292e;font-style:italic}.code-theme-github .hljs-strong{color:#24292e;font-weight:700}.code-theme-github .hljs-addition{color:#22863a;background-color:#f0fff4}.code-theme-github .hljs-deletion{color:#b31d28;background-color:#ffeef0}
+.code-theme-xcode pre code.hljs{display:block;overflow-x:auto;padding:1em}.code-theme-xcode code.hljs{padding:3px 5px}.code-theme-xcode .hljs{background:#fff;color:#000}.code-theme-xcode .xml .hljs-meta{color:silver}.code-theme-xcode .hljs-comment,.code-theme-xcode .hljs-quote{color:#007400}.code-theme-xcode .hljs-attribute,.code-theme-xcode .hljs-keyword,.code-theme-xcode .hljs-literal,.code-theme-xcode .hljs-name,.code-theme-xcode .hljs-selector-tag,.code-theme-xcode .hljs-tag{color:#aa0d91}.code-theme-xcode .hljs-template-variable,.code-theme-xcode .hljs-variable{color:#3f6e74}.code-theme-xcode .hljs-code,.code-theme-xcode .hljs-meta .hljs-string,.code-theme-xcode .hljs-string{color:#c41a16}.code-theme-xcode .hljs-link,.code-theme-xcode .hljs-regexp{color:#0e0eff}.code-theme-xcode .hljs-bullet,.code-theme-xcode .hljs-number,.code-theme-xcode .hljs-symbol,.code-theme-xcode .hljs-title{color:#1c00cf}.code-theme-xcode .hljs-meta,.code-theme-xcode .hljs-section{color:#643820}.code-theme-xcode .hljs-built_in,.code-theme-xcode .hljs-class .hljs-title,.code-theme-xcode .hljs-params,.code-theme-xcode .hljs-title.class_,.code-theme-xcode .hljs-type{color:#5c2699}.code-theme-xcode .hljs-attr{color:#836c28}.code-theme-xcode .hljs-subst{color:#000}.code-theme-xcode .hljs-formula{background-color:#eee;font-style:italic}.code-theme-xcode .hljs-addition{background-color:#baeeba}.code-theme-xcode .hljs-deletion{background-color:#ffc8bd}.code-theme-xcode .hljs-selector-class,.code-theme-xcode .hljs-selector-id{color:#9b703f}.code-theme-xcode .hljs-doctag,.code-theme-xcode .hljs-strong{font-weight:700}.code-theme-xcode .hljs-emphasis{font-style:italic}
+.code-theme-xcode pre code.hljs{display:block;overflow-x:auto;padding:1em}.code-theme-xcode code.hljs{padding:3px 5px}.code-theme-xcode .hljs{background:#fff;color:#000}.code-theme-xcode .xml .hljs-meta{color:silver}.code-theme-xcode .hljs-comment,.code-theme-xcode .hljs-quote{color:#007400}.code-theme-xcode .hljs-attribute,.code-theme-xcode .hljs-keyword,.code-theme-xcode .hljs-literal,.code-theme-xcode .hljs-name,.code-theme-xcode .hljs-selector-tag,.code-theme-xcode .hljs-tag{color:#aa0d91}.code-theme-xcode .hljs-template-variable,.code-theme-xcode .hljs-variable{color:#3f6e74}.code-theme-xcode .hljs-code,.code-theme-xcode .hljs-meta .hljs-string,.code-theme-xcode .hljs-string{color:#c41a16}.code-theme-xcode .hljs-link,.code-theme-xcode .hljs-regexp{color:#0e0eff}.code-theme-xcode .hljs-bullet,.code-theme-xcode .hljs-number,.code-theme-xcode .hljs-symbol,.code-theme-xcode .hljs-title{color:#1c00cf}.code-theme-xcode .hljs-meta,.code-theme-xcode .hljs-section{color:#643820}.code-theme-xcode .hljs-built_in,.code-theme-xcode .hljs-class .hljs-title,.code-theme-xcode .hljs-params,.code-theme-xcode .hljs-title.class_,.code-theme-xcode .hljs-type{color:#5c2699}.code-theme-xcode .hljs-attr{color:#836c28}.code-theme-xcode .hljs-subst{color:#000}.code-theme-xcode .hljs-formula{background-color:#eee;font-style:italic}.code-theme-xcode .hljs-addition{background-color:#baeeba}.code-theme-xcode .hljs-deletion{background-color:#ffc8bd}.code-theme-xcode .hljs-selector-class,.code-theme-xcode .hljs-selector-id{color:#9b703f}.code-theme-xcode .hljs-doctag,.code-theme-xcode .hljs-strong{font-weight:700}.code-theme-xcode .hljs-emphasis{font-style:italic}
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', 'Microsoft YaHei', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background: linear-gradient(135deg, #e0e7ff 0%, #d1e0fd 100%);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      padding: 20px;
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 1);
+      color: #333;
+      
+      
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 10px 30px rgba(67, 97, 238, 0.3);
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+      color: #4361ee;
+    }
+    
+    h1 { 
+      font-size: 2em; 
+      margin-top: 0.5em;
+      margin-bottom: 0.5em;
+    }
+    h2 { 
+      font-size: 1.5em; 
+      margin-top: 0.6em;
+      margin-bottom: 0.6em;
+    }
+    h3 { 
+      font-size: 1.25em; 
+      margin-top: 0.7em;
+      margin-bottom: 0.7em;
+    }
+    h4 { 
+      font-size: 1em; 
+      margin-top: 0.8em;
+      margin-bottom: 0.8em;
+    }
+    h5 { 
+      font-size: 0.83em; 
+      margin-top: 0.9em;
+      margin-bottom: 0.9em;
+    }
+    h6 { 
+      font-size: 0.67em; 
+      margin-top: 1em;
+      margin-bottom: 1em;
+    }
+    
+    p {
+      margin-bottom: 1em;
+    }
+    
+    img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+      margin: 1em 0;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    
+    img:hover {
+      transform: scale(1.02);
+    }
+    
+    /* 卡片图片样式优先级更高，覆盖全局img样式 */
+    .link-card .card-content > div:first-child img {
+      max-width: 100% !important;
+      max-height: 100% !important;
+      width: 100% !important;
+      height: 100% !important;
+      margin: 0 !important;
+      border-radius: 0 !important;
+      transform: none !important;
+    }
+    
+    .link-card .card-content > div:first-child img:hover {
+      transform: none !important;
+    }
+    
+    /* 图片查看器样式 */
+    .image-viewer {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .image-viewer.active {
+      display: flex;
+    }
+
+    /* 代码块滚动条美化 */
+    .code-block-wrapper pre {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(128, 128, 128, 0.3) transparent;
+    }
+
+    .code-block-wrapper pre::-webkit-scrollbar {
+      height: 8px;
+    }
+    
+    .code-block-wrapper pre::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    .code-block-wrapper pre::-webkit-scrollbar-thumb {
+      background: rgba(128, 128, 128, 0.3);
+      border-radius: 10px;
+    }
+    
+    .code-block-wrapper pre::-webkit-scrollbar-thumb:hover {
+      background: rgba(128, 128, 128, 0.5);
+    }
+    
+    .image-viewer img {
+      max-width: 90%;
+      max-height: 90%;
+      object-fit: contain;
+      cursor: default;
+      margin: 0;
+    }
+    
+    .image-viewer-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid white;
+      border-radius: 50%;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+    }
+    
+    .image-viewer-close:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.1);
+    }
+    
+    .image-viewer-controls {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 15px;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 10px 20px;
+      border-radius: 25px;
+    }
+    
+    .image-viewer-btn {
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid white;
+      border-radius: 50%;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+    }
+    
+    .image-viewer-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.1);
+    }
+    
+    a {
+      color: #4361ee;
+      text-decoration: none;
+    }
+    
+    a:hover {
+      color: #3f37c9;
+      text-decoration: underline;
+    }
+    
+    ul, ol {
+      margin-left: 2em;
+      margin-bottom: 1em;
+    }
+    
+    /* 代码块样式 */
+    .code-block-wrapper {
+      margin: 1em 0;
+      border-radius: 8px;
+      overflow: hidden;
+      
+      border: 1px solid rgba(0,0,0,0.1);
+      position: relative;
+    }
+    
+    .code-block-wrapper > div:first-child {
+      background: rgba(0,0,0,0.05);
+      padding: 8px 16px;
+      color: inherit;
+      font-size: 12px;
+      font-family: 'Courier New', monospace;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .code-block-wrapper pre {
+      margin: 0;
+      padding: 16px;
+      overflow-x: auto;
+      background: inherit;
+      /* 滚动条美化 */
+      scrollbar-width: thin;
+      scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+    }
+
+    .code-block-wrapper pre::-webkit-scrollbar {
+      height: 8px;
+    }
+    
+    .code-block-wrapper pre::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    .code-block-wrapper pre::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 10px;
+    }
+    
+    .code-block-wrapper pre::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 0, 0, 0.25);
+    }
+    
+    .code-block-wrapper code {
+      font-family: 'Courier New', Consolas, monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      
+      display: block;
+    }
+    
+    .code-copy-btn {
+      padding: 4px 8px;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 11px;
+      transition: background 0.2s;
+    }
+    
+    .code-copy-btn:hover {
+      background: #2563eb;
+    }
+    
+    /* Highlight.js 代码高亮样式 (Atom One Dark) */
+    .hljs {
+      color: #abb2bf;
+      background: #282c34;
+    }
+    .hljs-comment, .hljs-quote {
+      color: #5c6370;
+      font-style: italic;
+    }
+    .hljs-doctag, .hljs-keyword, .hljs-formula {
+      color: #c678dd;
+    }
+    .hljs-section, .hljs-name, .hljs-selector-tag, .hljs-deletion, .hljs-subst {
+      color: #e06c75;
+    }
+    .hljs-literal {
+      color: #56b6c2;
+    }
+    .hljs-string, .hljs-regexp, .hljs-addition, .hljs-attribute, .hljs-meta .hljs-string {
+      color: #98c379;
+    }
+    .hljs-attr, .hljs-variable, .hljs-template-variable, .hljs-type, .hljs-selector-class, .hljs-selector-attr, .hljs-selector-pseudo, .hljs-number {
+      color: #d19a66;
+    }
+    .hljs-symbol, .hljs-bullet, .hljs-link, .hljs-meta, .hljs-selector-id, .hljs-title {
+      color: #61aeee;
+    }
+    .hljs-built_in, .hljs-title.class_, .hljs-class .hljs-title {
+      color: #e6c07b;
+    }
+    .hljs-emphasis {
+      font-style: italic;
+    }
+    .hljs-strong {
+      font-weight: bold;
+    }
+    .hljs-link {
+      text-decoration: underline;
+    }
+    
+    /* 表格样式 */
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 0.8em 0;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* 默认表格样式（实线边框） */
+    table:not([style*="border-style: dashed"]):not([style*="border-style: dotted"]):not([style*="border-style: double"]) {
+      background: white !important;
+      opacity: 1 !important;
+    }
+    
+    table td, table th {
+      border: none;
+      padding: 10px 12px;
+      min-width: 80px;
+      text-align: left;
+      color: #333;
+    }
+    
+    /* 确保表格中的链接可以正常点击 */
+    table td a, table th a {
+      pointer-events: auto;
+      cursor: pointer;
+      position: relative;
+      z-index: 1;
+    }
+    
+    table td, table th {
+      cursor: default;
+    }
+    
+    /* 默认单元格样式（实线边框表格） */
+    table:not([style*="border-style: dashed"]):not([style*="border-style: dotted"]):not([style*="border-style: double"]) td {
+      background: white !important;
+    }
+    
+    table:not([style*="border-style: dashed"]):not([style*="border-style: dotted"]):not([style*="border-style: double"]) th {
+      background: #4361ee !important;
+      color: white !important;
+      font-weight: 600;
+    }
+    
+    table:not([style*="border-style: dashed"]):not([style*="border-style: dotted"]):not([style*="border-style: double"]) tr:nth-child(even) td {
+      background: #f8f9fa !important;
+    }
+    
+    table:not([style*="border-style: dashed"]):not([style*="border-style: dotted"]):not([style*="border-style: double"]) tr:hover td {
+      background: #e8f0fe !important;
+    }
+    
+    /* 虚线/点线/双线边框表格样式 - 使用和遮罩层一致的背景色和透明度 */
+    table[style*="border-style: dashed"],
+    table[style*="border-style: dotted"],
+    table[style*="border-style: double"] {
+      background: rgba(255, 255, 255, 1) !important;
+    }
+    
+    table[style*="border-style: dashed"] td,
+    table[style*="border-style: dashed"] th,
+    table[style*="border-style: dotted"] td,
+    table[style*="border-style: dotted"] th,
+    table[style*="border-style: double"] td,
+    table[style*="border-style: double"] th {
+      background: rgba(255, 255, 255, 1) !important;
+      color: #333 !important;
+    }
+    
+    
+    
+    /* 链接卡片样式 */
+    .link-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 16px;
+      margin: 16px 0;
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.2s;
+      background: #ffffff;
+      position: relative;
+      min-height: 96px;
+      max-height: 160px;
+      overflow: hidden;
+    }
+    
+    .link-card:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transform: translateY(-2px);
+      border-color: #4361ee;
+    }
+    
+    .link-card .card-content {
+      display: flex;
+      gap: 16px;
+      cursor: pointer;
+      height: 100%;
+    }
+    
+    .link-card .card-content > div:first-child {
+      width: 96px;
+      height: 96px;
+      flex-shrink: 0;
+      overflow: hidden;
+      border-radius: 4px;
+    }
+    
+    .link-card .card-content > div:first-child img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    
+    .link-card .card-content > div:last-child {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    
+    /* 移动端适配 */
+    @media (max-width: 768px) {
+      
+      
+      .floating-toc {
+        width: 240px;
+        transform: translateY(-50%) translateX(-240px);
+      }
+      
+      .floating-toc.visible {
+        transform: translateY(-50%) translateX(0);
+      }
+      
+      .link-card .card-content {
+        flex-direction: column;
+      }
+      
+      .link-card .card-content > div:first-child {
+        width: 100%;
+        height: 200px;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/gradient-dark.min.css">
+</head>
+<body>
+  
+  
+  <div class="container">
+    <div class="content">
+      <p style="text-align: center;"><span style="font-size: 24px;"><b>通过命令行打开UWP应用</b></span></p><p style="text-align: left;"><span style="font-size: 18px;"><font face="Verdana">近期由于需要在WinX菜单中添加⼏个UWP应⽤，但发现很难找到相应的命令⾏，Universal Apps 的快捷⽅式属性⾥也没有。
+</font></span></p><p style="text-align: left;"><span style="font-size: 18px;"><font face="Verdana">于是到⽹上搜了很久才找到⼀个E⽂的⻚⾯，试了⼀下确实可⾏，分享给⼤家：
+</font></span></p><p style="text-align: left;"><span style="font-size: 18px;"><font face="Verdana">1、打开PowerShell，并输⼊命令 get-appxpackage &gt; 1.txt，然后输⼊命令notepad 1.txt，打开这个⽣成的1.txt⽂件
+</font></span></p><p style="text-align: left;"><span style="font-size: 18px;"><font face="Verdana">或者打开“获取已安装UWP应用信息.bat” 更改编码为ANSI</font></span></p><div class="code-block-wrapper code-theme-gradient-dark" id="code-1772638282968-3b7g9fa82" data-code="@echo off&amp;(pushd &quot;%~DP0&quot;)&amp;TITLE 获取已安装UWP应用信息&amp;color f0&amp;(REG QUERY &quot;HKU\S-1-5-19&quot;>NUL 2>&amp;1)||(powershell -Command &quot;Start-Process '%~sdpnx0' -Verb RunAs&quot;&amp;&amp;exit)
+PowerShell get-appxpackage > %cd%\1.txt 
+type %cd%\1.txt &amp; del %cd%\1.txt 
+pause" data-language="bash" data-theme="gradient-dark" style="margin: 1em 0; border-radius: 8px; overflow: hidden; position: relative;">
+        <div class="code-block-header" style="background: rgba(0, 0, 0, 0.05); padding: 8px 16px; color: inherit; font-size: 12px; font-family: &quot;Courier New&quot;, monospace; border-bottom-width: 1px; border-bottom-color: rgba(0, 0, 0, 0.05); display: flex; justify-content: space-between; align-items: center;">
+          Bash
+          <div class="code-block-actions" style="display: flex; gap: 8px;">
+            
+            
+            <button class="code-copy-btn" onclick="event.stopPropagation(); window.copyCodeBlock('code-1772638282968-3b7g9fa82', this);" style="padding: 4px 8px; background: rgb(59, 130, 246); color: white; border-width: initial; border-style: none; border-color: initial; border-radius: 4px; font-size: 11px; transition: background 0.2s;" onmouseover="this.style.background='#2563eb'" onmouseout="this.style.background='#3b82f6'">复制</button>
+          </div>
+        </div>
+        <pre style="margin-top: 0px; margin-bottom: 0px; padding: 16px; overflow-x: auto; background: inherit;"><code class="hljs language-bash" style="font-family: &quot;Courier New&quot;, Consolas, monospace; font-size: 14px; line-height: 1.5;">@<span class="hljs-built_in">echo</span> off&amp;(<span class="hljs-built_in">pushd</span> <span class="hljs-string">"%~DP0"</span>)&amp;TITLE 获取已安装UWP应用信息&amp;color f0&amp;(REG QUERY <span class="hljs-string">"HKU\S-1-5-19"</span>&gt;NUL 2&gt;&amp;1)||(powershell -Command <span class="hljs-string">"Start-Process '%~sdpnx0' -Verb RunAs"</span>&amp;&amp;<span class="hljs-built_in">exit</span>)
+PowerShell get-appxpackage &gt; %<span class="hljs-built_in">cd</span>%\1.txt 
+<span class="hljs-built_in">type</span> %<span class="hljs-built_in">cd</span>%\1.txt &amp; del %<span class="hljs-built_in">cd</span>%\1.txt 
+pause</code></pre>
+      </div><p>
+      </p><p><br></p><p style="text-align: left;"><span style="font-size: 18px;"><font face="Verdana">2、查找到PackageFamilyName值为快捷⽅式⽬标类型的那⼀个区块；
+</font></span></p><p style="text-align: left;"><span style="font-size: 18px;"><font face="Verdana">3、根据区块中的“InstallLocation”打开相应的⽬录；
+</font></span></p><p style="text-align: left;"><span style="font-size: 18px;"><font face="Verdana">4、打开⽬录中的“AppxManifest.xml”这个⽂件；
+</font></span></p><p style="text-align: left;"><span style="font-size: 18px;"><font face="Verdana">5、查找到“Executable=”这⼀⾏，可以在这⾏中得到应⽤的ID；
+</font></span></p><p style="text-align: left;"><span style="font-size: 18px;"><font face="Verdana">6、然后就可以在命令中输⼊以下命令来打开这个APP了。</font></span></p><p style="text-align: left;"><span style="font-size: 18px;"><font face="Verdana"><br></font></span></p><p style="text-align: left;"><span style="font-size: 18px;"><font face="Verdana">命令行（注意PackageFamilyName和应⽤ID之间有个叹号） ：</font></span></p><div class="code-block-wrapper code-theme-github" id="code-1772637600952-jmnoffz20" data-code="explorer shell:AppsFolder\应用的PackageFamilyName!应用的ID" data-language="bash" data-theme="github" style="margin: 1em 0px; border-radius: 8px; overflow: hidden; position: relative; border: 1px solid rgba(0, 0, 0, 0.1);">
+        <div class="code-block-header" style="background: rgba(0, 0, 0, 0.05); padding: 8px 16px; color: inherit; font-size: 12px; font-family: &quot;Courier New&quot;, monospace; border-bottom: 1px solid rgba(0, 0, 0, 0.05); display: flex; justify-content: space-between; align-items: center;">
+          Bash
+          <div class="code-block-actions" style="display: flex; gap: 8px;">
+            
+            
+            <button class="code-copy-btn" onclick="event.stopPropagation(); window.copyCodeBlock('code-1772637600952-jmnoffz20', this);" style="padding: 4px 8px; background: rgb(59, 130, 246); color: white; border-width: initial; border-style: none; border-color: initial; border-radius: 4px; font-size: 11px; transition: background 0.2s;" onmouseover="this.style.background='#2563eb'" onmouseout="this.style.background='#3b82f6'">复制</button>
+          </div>
+        </div>
+        <pre style="margin-top: 0px; margin-bottom: 0px; padding: 16px; overflow-x: auto; background: inherit;"><code class="hljs language-bash" style="font-family: &quot;Courier New&quot;, Consolas, monospace; font-size: 14px; line-height: 1.5;">explorer shell:AppsFolder\应用的PackageFamilyName!应用的ID</code></pre></div><p style="text-align: left;"><span style="font-size: 18px;"><font face="Verdana">举例
+</font></span></p><p style="text-align: left;"><span style="font-size: 18px;"><font face="Verdana">Microsoft Edge：</font></span></p><div class="code-block-wrapper code-theme-github" id="code-1772637648080-nlqb8u6im" data-code="explorer shell:AppsFolder\Microsoft.MicrosoftEdge_8wekyb3d8bbwe!MicrosoftEdge" data-language="bash" data-theme="github" style="margin: 1em 0; border-radius: 8px; overflow: hidden; position: relative;">
+        <div class="code-block-header" style="background: rgba(0, 0, 0, 0.05); padding: 8px 16px; color: inherit; font-size: 12px; font-family: &quot;Courier New&quot;, monospace; border-bottom-width: 1px; border-bottom-color: rgba(0, 0, 0, 0.05); display: flex; justify-content: space-between; align-items: center;">
+          Bash
+          <div class="code-block-actions" style="display: flex; gap: 8px;">
+            
+            
+            <button class="code-copy-btn" onclick="event.stopPropagation(); window.copyCodeBlock('code-1772637648080-nlqb8u6im', this);" style="padding: 4px 8px; background: rgb(59, 130, 246); color: white; border-width: initial; border-style: none; border-color: initial; border-radius: 4px; font-size: 11px; transition: background 0.2s;" onmouseover="this.style.background='#2563eb'" onmouseout="this.style.background='#3b82f6'">复制</button>
+          </div>
+        </div>
+        <pre style="margin-top: 0px; margin-bottom: 0px; padding: 16px; overflow-x: auto; background: inherit;"><code class="hljs language-bash" style="font-family: &quot;Courier New&quot;, Consolas, monospace; font-size: 14px; line-height: 1.5;">explorer shell:AppsFolder\Microsoft.MicrosoftEdge_8wekyb3d8bbwe!MicrosoftEdge</code></pre>
+      </div><p>
+      </p><p><br></p><p style="text-align: left;">
+</p><p style="text-align: left;">
+</p>
+    </div>
+  </div>
+  
+  <!-- 图片查看器 -->
+  <div class="image-viewer" id="imageViewer">
+    <button class="image-viewer-close" onclick="closeImageViewer()">✕</button>
+    <img id="viewerImage" src="" alt="">
+    <div class="image-viewer-controls">
+      <button class="image-viewer-btn" onclick="zoomOut()" title="缩小">−</button>
+      <button class="image-viewer-btn" onclick="resetZoom()" title="重置">⟲</button>
+      <button class="image-viewer-btn" onclick="zoomIn()" title="放大">+</button>
+    </div>
+  </div>
+  
+  <script>
+    // 图片查看器功能
+    let currentScale = 1;
+    const scaleStep = 0.2;
+    const minScale = 0.5;
+    const maxScale = 3;
+    
+    // 为所有图片添加点击事件
+    document.addEventListener('DOMContentLoaded', function() {
+      const images = document.querySelectorAll('.content img');
+      images.forEach(img => {
+        img.addEventListener('click', function() {
+          openImageViewer(this.src);
+        });
+      });
+    });
+    
+    function openImageViewer(src) {
+      const viewer = document.getElementById('imageViewer');
+      const viewerImage = document.getElementById('viewerImage');
+      if (viewer && viewerImage) {
+        viewerImage.src = src;
+        viewer.classList.add('active');
+        currentScale = 1;
+        updateImageScale();
+        document.body.style.overflow = 'hidden';
+      }
+    }
+    
+    function closeImageViewer() {
+      const viewer = document.getElementById('imageViewer');
+      if (viewer) {
+        viewer.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    }
+    
+    function zoomIn() {
+      if (currentScale < maxScale) {
+        currentScale += scaleStep;
+        updateImageScale();
+      }
+    }
+    
+    function zoomOut() {
+      if (currentScale > minScale) {
+        currentScale -= scaleStep;
+        updateImageScale();
+      }
+    }
+    
+    function resetZoom() {
+      currentScale = 1;
+      updateImageScale();
+    }
+    
+    function updateImageScale() {
+      const viewerImage = document.getElementById('viewerImage');
+      if (viewerImage) {
+        viewerImage.style.transform = 'scale(' + currentScale + ')';
+      }
+    }
+    
+    // 点击背景关闭查看器
+    document.getElementById('imageViewer')?.addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeImageViewer();
+      }
+    });
+    
+    // ESC键关闭查看器
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeImageViewer();
+      }
+    });
+    
+    
+    
+    // 代码块复制功能
+    window.copyCodeBlock = function(codeBlockId, buttonElement) {
+      const codeBlock = document.getElementById(codeBlockId);
+      if (!codeBlock) {
+        alert('找不到代码块');
+        return;
+      }
+      
+      // 从data属性获取原始代码
+      const code = codeBlock.getAttribute('data-code') || '';
+      const decodedCode = code.replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+      
+      // 更新按钮状态的函数
+      function updateButtonState(success) {
+        if (buttonElement && success) {
+          const originalText = buttonElement.textContent || '复制';
+          const originalBg = buttonElement.style.background || '#3b82f6';
+          buttonElement.textContent = '已复制';
+          buttonElement.style.background = '#10b981';
+          setTimeout(function() {
+            buttonElement.textContent = originalText;
+            buttonElement.style.background = originalBg;
+          }, 2000);
+        }
+      }
+      
+      // 复制到剪贴板
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(decodedCode).then(function() {
+          updateButtonState(true);
+        }).catch(function(err) {
+          console.error('复制失败:', err);
+          alert('复制失败，请手动复制');
+        });
+      } else {
+        // 降级方案：使用textarea
+        const textarea = document.createElement('textarea');
+        textarea.value = decodedCode;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+          document.execCommand('copy');
+          updateButtonState(true);
+        } catch (err) {
+          console.error('复制失败:', err);
+          alert('复制失败，请手动复制');
+        }
+        document.body.removeChild(textarea);
+      }
+      // 图片放大缩小功能
+      document.querySelectorAll('img:not(.link-card img)').forEach(img => {
+        let isResizing = false;
+        let startX, startWidth;
+
+        img.addEventListener('mousedown', function(e) {
+          isResizing = true;
+          startX = e.clientX;
+          startWidth = img.offsetWidth;
+          e.preventDefault();
+          img.style.cursor = 'nwse-resize';
+        });
+
+        window.addEventListener('mousemove', function(e) {
+          if (!isResizing) return;
+          const deltaX = e.clientX - startX;
+          img.style.width = (startWidth + deltaX) + 'px';
+          img.style.height = 'auto'; // 保持比例
+        });
+
+        window.addEventListener('mouseup', function() {
+          if (isResizing) {
+            isResizing = false;
+            img.style.cursor = 'pointer';
+          }
+        });
+      });
+    };
+  </script>
+</body>
+</html>
