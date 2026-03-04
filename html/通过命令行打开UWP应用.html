@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>通过命令行打开UWP应用</title>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', 'Microsoft YaHei', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background: linear-gradient(135deg, #e0e7ff 0%, #d1e0fd 100%);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      padding: 20px;
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 1);
+      color: #333;
+      
+      
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 10px 30px rgba(67, 97, 238, 0.3);
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+      color: #4361ee;
+    }
+    
+    h1 { 
+      font-size: 2em; 
+      margin-top: 0.5em;
+      margin-bottom: 0.5em;
+    }
+    h2 { 
+      font-size: 1.5em; 
+      margin-top: 0.6em;
+      margin-bottom: 0.6em;
+    }
+    h3 { 
+      font-size: 1.25em; 
+      margin-top: 0.7em;
+      margin-bottom: 0.7em;
+    }
+    h4 { 
+      font-size: 1em; 
+      margin-top: 0.8em;
+      margin-bottom: 0.8em;
+    }
+    h5 { 
+      font-size: 0.83em; 
+      margin-top: 0.9em;
+      margin-bottom: 0.9em;
+    }
+    h6 { 
+      font-size: 0.67em; 
+      margin-top: 1em;
+      margin-bottom: 1em;
+    }
+    
+    p {
+      margin-bottom: 1em;
+    }
+    
+    img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+      margin: 1em 0;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    
+    img:hover {
+      transform: scale(1.02);
+    }
+    
+    /* 卡片图片样式优先级更高，覆盖全局img样式 */
+    .link-card .card-content > div:first-child img {
+      max-width: 100% !important;
+      max-height: 100% !important;
+      width: 100% !important;
+      height: 100% !important;
+      margin: 0 !important;
+      border-radius: 0 !important;
+      transform: none !important;
+    }
+    
+    .link-card .card-content > div:first-child img:hover {
+      transform: none !important;
+    }
+    
+    /* 图片查看器样式 */
+    .image-viewer {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .image-viewer.active {
+      display: flex;
+    }
+    
+    .image-viewer img {
+      max-width: 90%;
+      max-height: 90%;
+      object-fit: contain;
+      cursor: default;
+      margin: 0;
+    }
+    
+    .image-viewer-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid white;
+      border-radius: 50%;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+    }
+    
+    .image-viewer-close:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.1);
+    }
+    
+    .image-viewer-controls {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 15px;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 10px 20px;
+      border-radius: 25px;
+    }
+    
+    .image-viewer-btn {
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid white;
+      border-radius: 50%;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+    }
+    
+    .image-viewer-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.1);
+    }
+    
+    a {
+      color: #4361ee;
+      text-decoration: none;
+    }
+    
+    a:hover {
+      color: #3f37c9;
+      text-decoration: underline;
+    }
+    
+    ul, ol {
+      margin-left: 2em;
+      margin-bottom: 1em;
+    }
+    
+    /* 代码块样式 */
+    .code-block-wrapper {
+      margin: 1em 0;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #282c34;
+      border: 1px solid #3e4451;
+      position: relative;
+    }
+    
+    .code-block-wrapper > div:first-child {
+      background: #21252b;
+      padding: 8px 16px;
+      color: #abb2bf;
+      font-size: 12px;
+      font-family: 'Courier New', monospace;
+      border-bottom: 1px solid #3e4451;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .code-block-wrapper pre {
+      margin: 0;
+      padding: 16px;
+      overflow-x: auto;
+      background: #282c34;
+    }
+    
+    .code-block-wrapper code {
+      font-family: 'Courier New', Consolas, monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #abb2bf;
+      display: block;
+    }
+    
+    .code-copy-btn {
+      padding: 4px 8px;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 11px;
+      transition: background 0.2s;
+    }
+    
+    .code-copy-btn:hover {
+      background: #2563eb;
+    }
+    
+    /* Highlight.js 代码高亮样式 (Atom One Dark) */
+    .hljs {
+      color: #abb2bf;
+      background: #282c34;
+    }
+    .hljs-comment, .hljs-quote {
+      color: #5c6370;
+      font-style: italic;
+    }
+    .hljs-doctag, .hljs-keyword, .hljs-formula {
+      color: #c678dd;
+    }
+    .hljs-section, .hljs-name, .hljs-selector-tag, .hljs-deletion, .hljs-subst {
+      color: #e06c75;
+    }
+    .hljs-literal {
+      color: #56b6c2;
+    }
+    .hljs-string, .hljs-regexp, .hljs-addition, .hljs-attribute, .hljs-meta .hljs-string {
+      color: #98c379;
+    }
+    .hljs-attr, .hljs-variable, .hljs-template-variable, .hljs-type, .hljs-selector-class, .hljs-selector-attr, .hljs-selector-pseudo, .hljs-number {
+      color: #d19a66;
+    }
+    .hljs-symbol, .hljs-bullet, .hljs-link, .hljs-meta, .hljs-selector-id, .hljs-title {
+      color: #61aeee;
+    }
+    .hljs-built_in, .hljs-title.class_, .hljs-class .hljs-title {
+      color: #e6c07b;
+    }
+    .hljs-emphasis {
+      font-style: italic;
+    }
+    .hljs-strong {
+      font-weight: bold;
+    }
+    .hljs-link {
+      text-decoration: underline;
+    }
+    
+    /* 表格样式 */
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 0.8em 0;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* 默认表格样式（实线边框） */
+    table:not([style*="border-style: dashed"]):not([style*="border-style: dotted"]):not([style*="border-style: double"]) {
+      background: white !important;
+      opacity: 1 !important;
+    }
+    
+    table td, table th {
+      border: none;
+      padding: 10px 12px;
+      min-width: 80px;
+      text-align: left;
+      color: #333;
+    }
+    
+    /* 确保表格中的链接可以正常点击 */
+    table td a, table th a {
+      pointer-events: auto;
+      cursor: pointer;
+      position: relative;
+      z-index: 1;
+    }
+    
+    table td, table th {
+      cursor: default;
+    }
+    
+    /* 默认单元格样式（实线边框表格） */
+    table:not([style*="border-style: dashed"]):not([style*="border-style: dotted"]):not([style*="border-style: double"]) td {
+      background: white !important;
+    }
+    
+    table:not([style*="border-style: dashed"]):not([style*="border-style: dotted"]):not([style*="border-style: double"]) th {
+      background: #4361ee !important;
+      color: white !important;
+      font-weight: 600;
+    }
+    
+    table:not([style*="border-style: dashed"]):not([style*="border-style: dotted"]):not([style*="border-style: double"]) tr:nth-child(even) td {
+      background: #f8f9fa !important;
+    }
+    
+    table:not([style*="border-style: dashed"]):not([style*="border-style: dotted"]):not([style*="border-style: double"]) tr:hover td {
+      background: #e8f0fe !important;
+    }
+    
+    /* 虚线/点线/双线边框表格样式 - 使用和遮罩层一致的背景色和透明度 */
+    table[style*="border-style: dashed"],
+    table[style*="border-style: dotted"],
+    table[style*="border-style: double"] {
+      background: rgba(255, 255, 255, 1) !important;
+    }
+    
+    table[style*="border-style: dashed"] td,
+    table[style*="border-style: dashed"] th,
+    table[style*="border-style: dotted"] td,
+    table[style*="border-style: dotted"] th,
+    table[style*="border-style: double"] td,
+    table[style*="border-style: double"] th {
+      background: rgba(255, 255, 255, 1) !important;
+      color: #333 !important;
+    }
+    
+    
+    
+    /* 链接卡片样式 */
+    .link-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 16px;
+      margin: 16px 0;
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.2s;
+      background: #ffffff;
+      position: relative;
+      min-height: 96px;
+      max-height: 160px;
+      overflow: hidden;
+    }
+    
+    .link-card:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transform: translateY(-2px);
+      border-color: #4361ee;
+    }
+    
+    .link-card .card-content {
+      display: flex;
+      gap: 16px;
+      cursor: pointer;
+      height: 100%;
+    }
+    
+    .link-card .card-content > div:first-child {
+      width: 96px;
+      height: 96px;
+      flex-shrink: 0;
+      overflow: hidden;
+      border-radius: 4px;
+    }
+    
+    .link-card .card-content > div:first-child img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    
+    .link-card .card-content > div:last-child {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    
+    /* 移动端适配 */
+    @media (max-width: 768px) {
+      
+      
+      .floating-toc {
+        width: 240px;
+        transform: translateY(-50%) translateX(-240px);
+      }
+      
+      .floating-toc.visible {
+        transform: translateY(-50%) translateX(0);
+      }
+      
+      .link-card .card-content {
+        flex-direction: column;
+      }
+      
+      .link-card .card-content > div:first-child {
+        width: 100%;
+        height: 200px;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/tomorrow-night-bright.min.css">
+</head>
+<body>
+  
+  
+  <div class="container">
+    <div class="content">
+      <p style="text-align: center;"><span style="font-size: 24px;"><b>通过命令行打开UWP应用</b></span></p><p style="text-align: left;"><span style="font-size: 18px;"><font face="Verdana">近期由于需要在WinX菜单中添加⼏个UWP应⽤，但发现很难找到相应的命令⾏，Universal Apps 的快捷⽅式属性⾥也没有。
+</font></span></p><p style="text-align: left;"><span style="font-size: 18px;"><font face="Verdana">于是到⽹上搜了很久才找到⼀个E⽂的⻚⾯，试了⼀下确实可⾏，分享给⼤家：
+</font></span></p><p style="text-align: left;"><span style="font-size: 18px;"><font face="Verdana">1、打开PowerShell，并输⼊命令 get-appxpackage &gt; 1.txt，然后输⼊命令notepad 1.txt，打开这个⽣成的1.txt⽂件
+</font></span></p><p style="text-align: left;"><span style="font-size: 18px;"><font face="Verdana">或者打开“获取已安装UWP应用信息.bat” 更改编码为ANSI</font></span></p><p>
+      </p><div class="code-block-wrapper" id="code-1772623814108-kxnjudxrp" data-code="@echo off&amp;(pushd &quot;%~DP0&quot;)&amp;TITLE 获取已安装UWP应用信息&amp;color f0&amp;(REG QUERY &quot;HKU\S-1-5-19&quot;>NUL 2>&amp;1)||(powershell -Command &quot;Start-Process '%~sdpnx0' -Verb RunAs&quot;&amp;&amp;exit)
+PowerShell get-appxpackage > %cd%\1.txt 
+type %cd%\1.txt &amp; del %cd%\1.txt 
+pause" data-language="javascript" style="margin: 1em 0px; border-radius: 8px; overflow: hidden; background: rgb(40, 44, 52); border-width: 1px; border-color: rgb(62, 68, 81); border-image: initial; position: relative;">
+        <div style="background: rgb(33, 37, 43); padding: 8px 16px; color: rgb(171, 178, 191); font-size: 12px; font-family: &quot;Courier New&quot;, monospace; border-bottom-width: 1px; border-bottom-color: rgb(62, 68, 81); display: flex; justify-content: space-between; align-items: center;">
+          JavaScript
+          <div class="code-block-actions" style="display: flex; gap: 8px;">
+            
+            <button class="code-copy-btn" onclick="event.stopPropagation(); window.copyCodeBlock('code-1772623814108-kxnjudxrp', this);" style="padding: 4px 8px; background: rgb(59, 130, 246); color: white; border-width: initial; border-style: none; border-color: initial; border-radius: 4px; font-size: 11px; transition: background 0.2s;" onmouseover="this.style.background='#2563eb'" onmouseout="this.style.background='#3b82f6'">复制</button>
+          </div>
+        </div>
+        <pre style="margin-top: 0px; margin-bottom: 0px; padding: 16px; overflow-x: auto;"><code class="hljs language-javascript" style="font-family: &quot;Courier New&quot;, Consolas, monospace; font-size: 14px; line-height: 1.5; color: rgb(171, 178, 191);">@echo off&amp;(pushd <span class="hljs-string">"%~DP0"</span>)&amp;<span class="hljs-variable constant_">TITLE</span> 获取已安装<span class="hljs-variable constant_">UWP</span>应用信息&amp;color f0&amp;(<span class="hljs-variable constant_">REG</span> <span class="hljs-variable constant_">QUERY</span> <span class="hljs-string">"HKU\S-1-5-19"</span>&gt;<span class="hljs-variable constant_">NUL</span> <span class="hljs-number">2</span>&gt;&amp;<span class="hljs-number">1</span>)||(powershell -<span class="hljs-title class_">Command</span> <span class="hljs-string">"Start-Process '%~sdpnx0' -Verb RunAs"</span>&amp;&amp;exit)
+<span class="hljs-title class_">PowerShell</span> get-appxpackage &gt; %cd%\<span class="hljs-number">1.</span>txt 
+type %cd%\<span class="hljs-number">1.</span>txt &amp; del %cd%\<span class="hljs-number">1.</span>txt 
+pause</code></pre>
+      </div><p>
+      </p><p><br></p><p style="text-align: left;"><span style="font-size: 18px;"><font face="Verdana">2、查找到PackageFamilyName值为快捷⽅式⽬标类型的那⼀个区块；
+</font></span></p><p style="text-align: left;"><span style="font-size: 18px;"><font face="Verdana">3、根据区块中的“InstallLocation”打开相应的⽬录；
+</font></span></p><p style="text-align: left;"><span style="font-size: 18px;"><font face="Verdana">4、打开⽬录中的“AppxManifest.xml”这个⽂件；
+</font></span></p><p style="text-align: left;"><span style="font-size: 18px;"><font face="Verdana">5、查找到“Executable=”这⼀⾏，可以在这⾏中得到应⽤的ID；
+</font></span></p><p style="text-align: left;"><span style="font-size: 18px;"><font face="Verdana">6、然后就可以在命令中输⼊以下命令来打开这个APP了。</font></span></p><p style="text-align: left;"><span style="font-size: 18px;"><font face="Verdana"><br></font></span></p><p style="text-align: left;"><span style="font-size: 18px;"><font face="Verdana">命令行（注意PackageFamilyName和应⽤ID之间有个叹号） ：</font></span></p><p>
+      </p><div class="code-block-wrapper" id="code-1772624010976-jzxig9ah4" data-code="explorer shell:AppsFolder\应用的PackageFamilyName!应用的ID" data-language="bash" style="margin: 1em 0px; border-radius: 8px; overflow: hidden; background: rgb(40, 44, 52); border-width: 1px; border-color: rgb(62, 68, 81); border-image: initial; position: relative;">
+        <div style="background: rgb(33, 37, 43); padding: 8px 16px; color: rgb(171, 178, 191); font-size: 12px; font-family: &quot;Courier New&quot;, monospace; border-bottom-width: 1px; border-bottom-color: rgb(62, 68, 81); display: flex; justify-content: space-between; align-items: center;">
+          Bash
+          <div class="code-block-actions" style="display: flex; gap: 8px;">
+            
+            <button class="code-copy-btn" onclick="event.stopPropagation(); window.copyCodeBlock('code-1772624010976-jzxig9ah4', this);" style="padding: 4px 8px; background: rgb(59, 130, 246); color: white; border-width: initial; border-style: none; border-color: initial; border-radius: 4px; font-size: 11px; transition: background 0.2s;" onmouseover="this.style.background='#2563eb'" onmouseout="this.style.background='#3b82f6'">复制</button>
+          </div>
+        </div>
+        <pre style="margin-top: 0px; margin-bottom: 0px; padding: 16px; overflow-x: auto;"><code class="hljs language-bash" style="font-family: &quot;Courier New&quot;, Consolas, monospace; font-size: 14px; line-height: 1.5; color: rgb(171, 178, 191);">explorer shell:AppsFolder\应用的PackageFamilyName!应用的ID</code></pre></div><p style="text-align: left;"><span style="font-size: 18px;"><font face="Verdana">举例
+</font></span></p><p style="text-align: left;"><span style="font-size: 18px;"><font face="Verdana">Microsoft Edge：</font></span></p><div class="code-block-wrapper" id="code-1772624049590-qchzz8scz" data-code="explorer shell:AppsFolder\Microsoft.MicrosoftEdge_8wekyb3d8bbwe!MicrosoftEdge" data-language="bash" style="margin: 1em 0px; border-radius: 8px; overflow: hidden; background: rgb(40, 44, 52); border-width: 1px; border-color: rgb(62, 68, 81); border-image: initial; position: relative;">
+        <div style="background: rgb(33, 37, 43); padding: 8px 16px; color: rgb(171, 178, 191); font-size: 12px; font-family: &quot;Courier New&quot;, monospace; border-bottom-width: 1px; border-bottom-color: rgb(62, 68, 81); display: flex; justify-content: space-between; align-items: center;">
+          Bash
+          <div class="code-block-actions" style="display: flex; gap: 8px;">
+            
+            <button class="code-copy-btn" onclick="event.stopPropagation(); window.copyCodeBlock('code-1772624049590-qchzz8scz', this);" style="padding: 4px 8px; background: rgb(59, 130, 246); color: white; border-width: initial; border-style: none; border-color: initial; border-radius: 4px; font-size: 11px; transition: background 0.2s;" onmouseover="this.style.background='#2563eb'" onmouseout="this.style.background='#3b82f6'">复制</button>
+          </div>
+        </div>
+        <pre style="margin-top: 0px; margin-bottom: 0px; padding: 16px; overflow-x: auto;"><code class="hljs language-bash" style="font-family: &quot;Courier New&quot;, Consolas, monospace; font-size: 14px; line-height: 1.5; color: rgb(171, 178, 191);">explorer shell:AppsFolder\Microsoft.MicrosoftEdge_8wekyb3d8bbwe!MicrosoftEdge</code></pre>
+      </div><p>
+      </p><p><br></p><p style="text-align: left;">
+</p><p style="text-align: left;">
+</p>
+    </div>
+  </div>
+  
+  <!-- 图片查看器 -->
+  <div class="image-viewer" id="imageViewer">
+    <button class="image-viewer-close" onclick="closeImageViewer()">✕</button>
+    <img id="viewerImage" src="" alt="">
+    <div class="image-viewer-controls">
+      <button class="image-viewer-btn" onclick="zoomOut()" title="缩小">−</button>
+      <button class="image-viewer-btn" onclick="resetZoom()" title="重置">⟲</button>
+      <button class="image-viewer-btn" onclick="zoomIn()" title="放大">+</button>
+    </div>
+  </div>
+  
+  <script>
+    // 图片查看器功能
+    let currentScale = 1;
+    const scaleStep = 0.2;
+    const minScale = 0.5;
+    const maxScale = 3;
+    
+    // 为所有图片添加点击事件
+    document.addEventListener('DOMContentLoaded', function() {
+      const images = document.querySelectorAll('.content img');
+      images.forEach(img => {
+        img.addEventListener('click', function() {
+          openImageViewer(this.src);
+        });
+      });
+    });
+    
+    function openImageViewer(src) {
+      const viewer = document.getElementById('imageViewer');
+      const viewerImage = document.getElementById('viewerImage');
+      if (viewer && viewerImage) {
+        viewerImage.src = src;
+        viewer.classList.add('active');
+        currentScale = 1;
+        updateImageScale();
+        document.body.style.overflow = 'hidden';
+      }
+    }
+    
+    function closeImageViewer() {
+      const viewer = document.getElementById('imageViewer');
+      if (viewer) {
+        viewer.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    }
+    
+    function zoomIn() {
+      if (currentScale < maxScale) {
+        currentScale += scaleStep;
+        updateImageScale();
+      }
+    }
+    
+    function zoomOut() {
+      if (currentScale > minScale) {
+        currentScale -= scaleStep;
+        updateImageScale();
+      }
+    }
+    
+    function resetZoom() {
+      currentScale = 1;
+      updateImageScale();
+    }
+    
+    function updateImageScale() {
+      const viewerImage = document.getElementById('viewerImage');
+      if (viewerImage) {
+        viewerImage.style.transform = `scale(${currentScale})`;
+      }
+    }
+    
+    // 点击背景关闭查看器
+    document.getElementById('imageViewer')?.addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeImageViewer();
+      }
+    });
+    
+    // ESC键关闭查看器
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeImageViewer();
+      }
+    });
+    
+    
+    
+    // 代码块复制功能
+    window.copyCodeBlock = function(codeBlockId, buttonElement) {
+      const codeBlock = document.getElementById(codeBlockId);
+      if (!codeBlock) {
+        alert('找不到代码块');
+        return;
+      }
+      
+      // 从data属性获取原始代码
+      const code = codeBlock.getAttribute('data-code') || '';
+      const decodedCode = code.replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+      
+      // 更新按钮状态的函数
+      function updateButtonState(success) {
+        if (buttonElement && success) {
+          const originalText = buttonElement.textContent || '复制';
+          const originalBg = buttonElement.style.background || '#3b82f6';
+          buttonElement.textContent = '已复制';
+          buttonElement.style.background = '#10b981';
+          setTimeout(function() {
+            buttonElement.textContent = originalText;
+            buttonElement.style.background = originalBg;
+          }, 2000);
+        }
+      }
+      
+      // 复制到剪贴板
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(decodedCode).then(function() {
+          updateButtonState(true);
+        }).catch(function(err) {
+          console.error('复制失败:', err);
+          alert('复制失败，请手动复制');
+        });
+      } else {
+        // 降级方案：使用textarea
+        const textarea = document.createElement('textarea');
+        textarea.value = decodedCode;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+          document.execCommand('copy');
+          updateButtonState(true);
+        } catch (err) {
+          console.error('复制失败:', err);
+          alert('复制失败，请手动复制');
+        }
+        document.body.removeChild(textarea);
+      }
+      // 图片放大缩小功能
+      document.querySelectorAll('img:not(.link-card img)').forEach(img => {
+        let isResizing = false;
+        let startX, startWidth;
+
+        img.addEventListener('mousedown', function(e) {
+          isResizing = true;
+          startX = e.clientX;
+          startWidth = img.offsetWidth;
+          e.preventDefault();
+          img.style.cursor = 'nwse-resize';
+        });
+
+        window.addEventListener('mousemove', function(e) {
+          if (!isResizing) return;
+          const deltaX = e.clientX - startX;
+          img.style.width = (startWidth + deltaX) + 'px';
+          img.style.height = 'auto'; // 保持比例
+        });
+
+        window.addEventListener('mouseup', function() {
+          if (isResizing) {
+            isResizing = false;
+            img.style.cursor = 'pointer';
+          }
+        });
+      });
+    };
+  </script>
+</body>
+</html>
