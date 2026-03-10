@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="referrer" content="no-referrer">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>解决VSCode中Github Copilot无法登陆的问题</title>
+  
+  <style>
+    .code-theme-atom-one-dark pre code.hljs{display:block;overflow-x:auto;padding:1em}.code-theme-atom-one-dark code.hljs{padding:3px 5px}.code-theme-atom-one-dark .hljs{color:#abb2bf;background:#282c34}.code-theme-atom-one-dark .hljs-comment,.code-theme-atom-one-dark .hljs-quote{color:#5c6370;font-style:italic}.code-theme-atom-one-dark .hljs-doctag,.code-theme-atom-one-dark .hljs-formula,.code-theme-atom-one-dark .hljs-keyword{color:#c678dd}.code-theme-atom-one-dark .hljs-deletion,.code-theme-atom-one-dark .hljs-name,.code-theme-atom-one-dark .hljs-section,.code-theme-atom-one-dark .hljs-selector-tag,.code-theme-atom-one-dark .hljs-subst{color:#e06c75}.code-theme-atom-one-dark .hljs-literal{color:#56b6c2}.code-theme-atom-one-dark .hljs-addition,.code-theme-atom-one-dark .hljs-attribute,.code-theme-atom-one-dark .hljs-meta .hljs-string,.code-theme-atom-one-dark .hljs-regexp,.code-theme-atom-one-dark .hljs-string{color:#98c379}.code-theme-atom-one-dark .hljs-attr,.code-theme-atom-one-dark .hljs-number,.code-theme-atom-one-dark .hljs-selector-attr,.code-theme-atom-one-dark .hljs-selector-class,.code-theme-atom-one-dark .hljs-selector-pseudo,.code-theme-atom-one-dark .hljs-template-variable,.code-theme-atom-one-dark .hljs-type,.code-theme-atom-one-dark .hljs-variable{color:#d19a66}.code-theme-atom-one-dark .hljs-bullet,.code-theme-atom-one-dark .hljs-link,.code-theme-atom-one-dark .hljs-meta,.code-theme-atom-one-dark .hljs-selector-id,.code-theme-atom-one-dark .hljs-symbol,.code-theme-atom-one-dark .hljs-title{color:#61aeee}.code-theme-atom-one-dark .hljs-built_in,.code-theme-atom-one-dark .hljs-class .hljs-title,.code-theme-atom-one-dark .hljs-title.class_{color:#e6c07b}.code-theme-atom-one-dark .hljs-emphasis{font-style:italic}.code-theme-atom-one-dark .hljs-strong{font-weight:700}.code-theme-atom-one-dark .hljs-link{text-decoration:underline}
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', 'Microsoft YaHei', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background: linear-gradient(135deg, #fcfcff 0%, #f7f7fa 100%);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      padding: 20px;
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 1);
+      color: #333;
+      
+      
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 10px 30px rgba(67, 97, 238, 0.3);
+      min-height: calc(100vh - 40px);
+      box-sizing: border-box;
+      overflow-wrap: break-word;
+      word-wrap: break-word;
+      word-break: break-word;
+    }
+    
+    .container * {
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+      color: #4361ee;
+    }
+    
+    h1 { 
+      font-size: 2em; 
+      margin-top: 0.5em;
+      margin-bottom: 0.5em;
+    }
+    h2 { 
+      font-size: 1.5em; 
+      margin-top: 0.6em;
+      margin-bottom: 0.6em;
+    }
+    h3 { 
+      font-size: 1.25em; 
+      margin-top: 0.7em;
+      margin-bottom: 0.7em;
+    }
+    h4 { 
+      font-size: 1em; 
+      margin-top: 0.8em;
+      margin-bottom: 0.8em;
+    }
+    h5 { 
+      font-size: 0.83em; 
+      margin-top: 0.9em;
+      margin-bottom: 0.9em;
+    }
+    h6 { 
+      font-size: 0.67em; 
+      margin-top: 1em;
+      margin-bottom: 1em;
+    }
+    
+    p {
+      margin-bottom: 1em;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+    
+    a {
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      word-break: break-all;
+    }
+    
+    hr {
+      border: none;
+      border-top: 2px solid rgba(67, 97, 238, 0.3);
+      margin: 1.8em 0;
+      max-width: 100%;
+      height: 0;
+      box-sizing: content-box;
+    }
+    
+    table {
+      max-width: 100%;
+      width: 100% !important;
+      border-collapse: collapse;
+      margin: 1em 0;
+      display: block;
+      overflow-x: auto;
+      word-break: normal;
+    }
+    
+    pre {
+      max-width: 100%;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    
+    img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+      margin: 1em 0;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    
+    img:hover {
+      transform: scale(1.02);
+    }
+    
+    /* 卡片图片样式优先级更高，覆盖全局img样式 */
+    .link-card .card-content > div:first-child img {
+      max-width: 100% !important;
+      max-height: 100% !important;
+      width: 100% !important;
+      height: 100% !important;
+      margin: 0 !important;
+      border-radius: 0 !important;
+      transform: none !important;
+    }
+    
+    .link-card .card-content > div:first-child img:hover {
+      transform: none !important;
+    }
+    
+    /* 图片查看器样式 */
+    .image-viewer {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .image-viewer.active {
+      display: flex;
+    }
+
+    /* 代码块滚动条美化 */
+    .code-block-wrapper pre {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(128, 128, 128, 0.3) transparent;
+    }
+
+    .code-block-wrapper pre::-webkit-scrollbar {
+      height: 8px;
+    }
+    
+    .code-block-wrapper pre::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    .code-block-wrapper pre::-webkit-scrollbar-thumb {
+      background: rgba(128, 128, 128, 0.3);
+      border-radius: 10px;
+    }
+    
+    .code-block-wrapper pre::-webkit-scrollbar-thumb:hover {
+      background: rgba(128, 128, 128, 0.5);
+    }
+    
+    .image-viewer img {
+      max-width: 90%;
+      max-height: 90%;
+      object-fit: contain;
+      cursor: default;
+      margin: 0;
+    }
+    
+    .image-viewer-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid white;
+      border-radius: 50%;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+    }
+    
+    .image-viewer-close:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.1);
+    }
+    
+    .image-viewer-controls {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 15px;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 10px 20px;
+      border-radius: 25px;
+    }
+    
+    .image-viewer-btn {
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid white;
+      border-radius: 50%;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+    }
+    
+    .image-viewer-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.1);
+    }
+
+    .attachment-wrapper:hover {
+      border-color: #4361ee !important;
+      box-shadow: 0 2px 10px rgba(67, 97, 238, 0.1);
+    }
+    
+    #attachmentDialog {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 10000;
+      justify-content: center; align-items: center;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    #attachmentDialog.active { display: flex; }
+    .attach-modal {
+      background: white; border-radius: 12px; padding: 24px;
+      width: 90%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    .attach-modal h3 { margin-top: 0; margin-bottom: 8px; font-size: 18px; color: #1f2937; }
+    .attach-modal p { color: #6b7280; font-size: 14px; margin-bottom: 20px; line-height: 1.5; }
+    .code-box {
+      background: #f3f4f6; border-radius: 8px; padding: 12px;
+      display: flex; align-items: center; gap: 12px; margin-bottom: 24px;
+      border: 1px solid #e5e7eb;
+    }
+    .code-box input {
+      flex: 1; border: none; background: transparent; font-family: monospace;
+      font-size: 20px; text-align: center; font-weight: bold; color: #111827;
+      letter-spacing: 2px; outline: none;
+    }
+    .btn-group { display: flex; gap: 12px; }
+    .btn {
+      flex: 1; padding: 12px; border-radius: 8px; border: none;
+      cursor: pointer; font-weight: 600; font-size: 14px;
+      transition: all 0.2s;
+    }
+    .btn-close { background: #f3f4f6; color: #374151; }
+    .btn-close:hover { background: #e5e7eb; }
+    .btn-open { background: #4361ee; color: white; }
+    .btn-open:hover { background: #3b82f6; }
+    
+    .scroll-buttons {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 9999;
+    }
+    
+    .scroll-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid #e2e8f0;
+      color: #1e293b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transition: all 0.2s;
+    }
+    
+    .scroll-btn:hover {
+      background: #f8fafc;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+      color: #4361ee;
+    }
+    
+    .scroll-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+    
+    a {
+      color: #4361ee;
+      text-decoration: none;
+    }
+    
+    a:hover {
+      color: #3f37c9;
+      text-decoration: underline;
+    }
+    
+    ul, ol {
+      margin-left: 2em;
+      margin-bottom: 1em;
+    }
+    
+    /* 代码块样式 */
+    .code-block-wrapper {
+      margin: 1em 0;
+      border-radius: 8px;
+      overflow: hidden;
+      
+      border: 1px solid rgba(0,0,0,0.1);
+      position: relative;
+    }
+    
+    .code-block-wrapper > div:first-child {
+      background: rgba(0,0,0,0.05);
+      padding: 8px 16px;
+      color: inherit;
+      font-size: 12px;
+      font-family: 'Courier New', monospace;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .code-block-wrapper pre {
+      margin: 0;
+      padding: 16px;
+      overflow-x: auto;
+      background: inherit;
+      /* 滚动条美化 */
+      scrollbar-width: thin;
+      scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+    }
+
+    .code-block-wrapper pre::-webkit-scrollbar {
+      height: 8px;
+    }
+    
+    .code-block-wrapper pre::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    .code-block-wrapper pre::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 10px;
+    }
+    
+    .code-block-wrapper pre::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 0, 0, 0.25);
+    }
+    
+    .code-block-wrapper code {
+      font-family: 'Courier New', Consolas, monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      
+      display: block;
+    }
+    
+    .code-copy-btn {
+      padding: 4px 8px;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 11px;
+      transition: background 0.2s;
+    }
+    
+    .code-copy-btn:hover {
+      background: #2563eb;
+    }
+    
+    /* Highlight.js 代码高亮样式 (Atom One Dark) */
+    .hljs {
+      color: #abb2bf;
+      background: #282c34;
+    }
+    .hljs-comment, .hljs-quote {
+      color: #5c6370;
+      font-style: italic;
+    }
+    .hljs-doctag, .hljs-keyword, .hljs-formula {
+      color: #c678dd;
+    }
+    .hljs-section, .hljs-name, .hljs-selector-tag, .hljs-deletion, .hljs-subst {
+      color: #e06c75;
+    }
+    .hljs-literal {
+      color: #56b6c2;
+    }
+    .hljs-string, .hljs-regexp, .hljs-addition, .hljs-attribute, .hljs-meta .hljs-string {
+      color: #98c379;
+    }
+    .hljs-attr, .hljs-variable, .hljs-template-variable, .hljs-type, .hljs-selector-class, .hljs-selector-attr, .hljs-selector-pseudo, .hljs-number {
+      color: #d19a66;
+    }
+    .hljs-symbol, .hljs-bullet, .hljs-link, .hljs-meta, .hljs-selector-id, .hljs-title {
+      color: #61aeee;
+    }
+    .hljs-built_in, .hljs-title.class_, .hljs-class .hljs-title {
+      color: #e6c07b;
+    }
+    .hljs-emphasis {
+      font-style: italic;
+    }
+    .hljs-strong {
+      font-weight: bold;
+    }
+    .hljs-link {
+      text-decoration: underline;
+    }
+    
+    /* 表格样式 */
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 0.8em 0;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* 默认表格样式（实线边框） */
+    table:not([style*="border-style: dashed"]):not([style*="border-style: dotted"]):not([style*="border-style: double"]) {
+      background: white !important;
+      opacity: 1 !important;
+    }
+    
+    table td, table th {
+      border: none;
+      padding: 10px 12px;
+      min-width: 80px;
+      text-align: left;
+      color: #333;
+    }
+    
+    /* 确保表格中的链接可以正常点击 */
+    table td a, table th a {
+      pointer-events: auto;
+      cursor: pointer;
+      position: relative;
+      z-index: 1;
+    }
+    
+    table td, table th {
+      cursor: default;
+    }
+    
+    /* 默认单元格样式（实线边框表格） */
+    table:not([style*="border-style: dashed"]):not([style*="border-style: dotted"]):not([style*="border-style: double"]) td {
+      background: white !important;
+    }
+    
+    table:not([style*="border-style: dashed"]):not([style*="border-style: dotted"]):not([style*="border-style: double"]) th {
+      background: #4361ee !important;
+      color: white !important;
+      font-weight: 600;
+    }
+    
+    table:not([style*="border-style: dashed"]):not([style*="border-style: dotted"]):not([style*="border-style: double"]) tr:nth-child(even) td {
+      background: #f8f9fa !important;
+    }
+    
+    table:not([style*="border-style: dashed"]):not([style*="border-style: dotted"]):not([style*="border-style: double"]) tr:hover td {
+      background: #e8f0fe !important;
+    }
+    
+    /* 虚线/点线/双线边框表格样式 - 使用和遮罩层一致的背景色和透明度 */
+    table[style*="border-style: dashed"],
+    table[style*="border-style: dotted"],
+    table[style*="border-style: double"] {
+      background: rgba(255, 255, 255, 1) !important;
+    }
+    
+    table[style*="border-style: dashed"] td,
+    table[style*="border-style: dashed"] th,
+    table[style*="border-style: dotted"] td,
+    table[style*="border-style: dotted"] th,
+    table[style*="border-style: double"] td,
+    table[style*="border-style: double"] th {
+      background: rgba(255, 255, 255, 1) !important;
+      color: #333 !important;
+    }
+    
+    
+    
+    /* 链接卡片样式 */
+    .link-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 16px;
+      margin: 16px 0;
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.2s;
+      background: #ffffff;
+      position: relative;
+      min-height: 96px;
+      max-height: 160px;
+      overflow: hidden;
+    }
+    
+    .link-card:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transform: translateY(-2px);
+      border-color: #4361ee;
+    }
+    
+    .link-card .card-content {
+      display: flex;
+      gap: 16px;
+      cursor: pointer;
+      height: 100%;
+    }
+    
+    .link-card .card-content > div:first-child {
+      width: 96px;
+      height: 96px;
+      flex-shrink: 0;
+      overflow: hidden;
+      border-radius: 4px;
+    }
+    
+    .link-card .card-content > div:first-child img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    
+    .link-card .card-content > div:last-child {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    
+    /* 移动端适配 */
+    @media (max-width: 768px) {
+      
+      body {
+        
+        background-position: center !important;
+        background-size: cover !important;
+        background-repeat: no-repeat !important;
+        background-attachment: fixed !important;
+        padding: 10px;
+      }
+      
+      .container {
+        padding: 15px;
+        border-radius: 4px;
+        min-height: calc(100vh - 20px);
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+      }
+      
+      h1 { font-size: 1.4em; }
+      h2 { font-size: 1.2em; }
+      h3 { font-size: 1.1em; }
+      h4 { font-size: 1em; }
+      h5 { font-size: 0.9em; }
+      h6 { font-size: 0.85em; }
+      
+      
+      .floating-toc {
+        width: 240px;
+        transform: translateY(-50%) translateX(-240px);
+      }
+      
+      .floating-toc.visible {
+        transform: translateY(-50%) translateX(0);
+      }
+      
+      .link-card .card-content {
+        flex-direction: column;
+        height: auto !important;
+      }
+      
+      .link-card .card-content > div:first-child {
+        width: 100%;
+        height: 200px;
+        flex-shrink: 0;
+      }
+      
+      .link-card .card-content > div:last-child {
+        width: 100%;
+        padding-top: 12px;
+      }
+      
+      .link-card {
+        max-height: none !important;
+        height: auto !important;
+      }
+      
+      .link-card .card-content > div:last-child div {
+        white-space: normal !important;
+        word-break: break-all !important;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+</head>
+<body>
+  
+  
+  <div class="container">
+    <div class="content">
+      <p><span style="font-size: 18px;"><font face="Verdana">如题，我在5月10日遇到Github Copilot无法登录的问题，经过摸索，今天终于可以正常登录。</font></span></p>
+<p><span style="font-size: 18px;"><font face="Verdana">当时遇到的问题是点击使用<a href="http://Github.com">http://Github.com</a>账户登录无反应，终端报错如下：</font></span></p>
+<p><span style="font-size: 18px;"><font face="Verdana"> [error] GitHub Copilot could not connect to server. Extension activation failed: <strong>"Timed out waiting for authentication provider to register"</strong></font></span></p>
+<p><span style="font-size: 18px;"><font face="Verdana">[error] <strong>Timed out waiting for authentication provider to register</strong></font></span></p>
+<p><span style="font-size: 18px;">解决办法是<strong>修改</strong> <code>settings.json</code> <strong>文件​</strong></span></p>
+<p><strong>操作步骤​</strong>​：</p>
+<ol>
+<li>打开 VS Code 设置：</li>
+</ol>
+<ul>
+<li>快捷键 <code>Ctrl+,</code>（Windows/Linux）或 <code>Cmd+,</code>（macOS）。</li>
+</ul>
+<ol start="2">
+<li><p>在搜索栏输入 <code>proxy</code> → 点击 <code>Edit in settings.json</code>： </p>
+</li>
+<li><p>在<code>settings.json</code>中找到以下 <strong>配置​</strong>​ 并 ​<strong>​完全删除​</strong>​：</p>
+</li>
+</ol>
+<p><img src="https://pic3.zhimg.com/v2-e37b1951db01f9fbe04dceaa65c8cf54_r.jpg" alt=""></p>
+<p>更改后如下图所示：</p>
+<ol start="4">
+<li><p>​​完全关闭所有窗口，重新启动。</p>
+</li>
+<li><p>按 <code>Ctrl+Alt+I</code> 打开 Copilot Chat，输入问题（如 <code>How to reverse a string?</code>），检查是否正常响应。问题应该解决。</p>
+</li>
+</ol>
+<p><img src="https://pic3.zhimg.com/v2-4d15eafbbbf1e7828c48ddb17465acb0_r.jpg" alt=""></p>
+    </div>
+  </div>
+  
+  <!-- 图片查看器 -->
+  <div class="image-viewer" id="imageViewer">
+    <button class="image-viewer-close" onclick="closeImageViewer()">✕</button>
+    <img id="viewerImage" src="" alt="">
+    <div class="image-viewer-controls">
+      <button class="image-viewer-btn" onclick="zoomOut()" title="缩小">−</button>
+      <button class="image-viewer-btn" onclick="resetZoom()" title="重置">⟲</button>
+      <button class="image-viewer-btn" onclick="zoomIn()" title="放大">+</button>
+    </div>
+  </div>
+  
+  <!-- 附件提取码弹窗 -->
+  <div id="attachmentDialog">
+    <div class="attach-modal">
+      <h3>提取码提示</h3>
+      <p id="attachFileName"></p>
+      <div class="code-box">
+        <input type="text" id="attachCodeInput" readonly>
+        <button onclick="copyAttachCode()" style="background:none;border:none;cursor:pointer;padding:8px;color:#6b7280;display:flex;align-items:center;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+        </button>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-close" onclick="closeAttachDialog()">关闭</button>
+        <button class="btn btn-open" id="attachOpenBtn">复制并打开链接</button>
+      </div>
+    </div>
+  </div>
+  
+  
+  <div class="scroll-buttons">
+    <button class="scroll-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="回到顶部">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+    </button>
+    <button class="scroll-btn" onclick="window.scrollTo({top: document.documentElement.scrollHeight, behavior: 'smooth'})" title="跳到底部">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+    </button>
+  </div>
+  
+  
+  <script>
+    // 附件查看功能
+    function viewAttachment(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const dataStr = el.getAttribute('data-attachment');
+      const data = JSON.parse(dataStr);
+      if (data.code) {
+        document.getElementById('attachFileName').innerText = '附件 ' + data.name + ' 需要提取码。';
+        document.getElementById('attachCodeInput').value = data.code;
+        document.getElementById('attachmentDialog').classList.add('active');
+        document.getElementById('attachOpenBtn').onclick = function() {
+          copyAttachCode();
+          window.open(data.url, '_blank');
+          closeAttachDialog();
+        };
+      } else {
+        window.open(data.url, '_blank');
+      }
+    }
+    
+    function closeAttachDialog() {
+      document.getElementById('attachmentDialog').classList.remove('active');
+    }
+    
+    function copyAttachCode() {
+      const input = document.getElementById('attachCodeInput');
+      input.select();
+      document.execCommand('copy');
+      // 可以选择是否 alert，在离线环境下 alert 比较保险
+      alert('提取码已复制');
+    }
+
+    // 图片查看器功能
+    let currentScale = 1;
+    const scaleStep = 0.2;
+    const minScale = 0.5;
+    const maxScale = 3;
+    
+    // 为所有图片添加点击事件
+    document.addEventListener('DOMContentLoaded', function() {
+      const images = document.querySelectorAll('.content img');
+      images.forEach(img => {
+        img.addEventListener('click', function() {
+          openImageViewer(this.src);
+        });
+      });
+    });
+    
+    function openImageViewer(src) {
+      const viewer = document.getElementById('imageViewer');
+      const viewerImage = document.getElementById('viewerImage');
+      if (viewer && viewerImage) {
+        viewerImage.src = src;
+        viewer.classList.add('active');
+        currentScale = 1;
+        updateImageScale();
+        document.body.style.overflow = 'hidden';
+      }
+    }
+    
+    function closeImageViewer() {
+      const viewer = document.getElementById('imageViewer');
+      if (viewer) {
+        viewer.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    }
+    
+    function zoomIn() {
+      if (currentScale < maxScale) {
+        currentScale += scaleStep;
+        updateImageScale();
+      }
+    }
+    
+    function zoomOut() {
+      if (currentScale > minScale) {
+        currentScale -= scaleStep;
+        updateImageScale();
+      }
+    }
+    
+    function resetZoom() {
+      currentScale = 1;
+      updateImageScale();
+    }
+    
+    function updateImageScale() {
+      const viewerImage = document.getElementById('viewerImage');
+      if (viewerImage) {
+        viewerImage.style.transform = 'scale(' + currentScale + ')';
+      }
+    }
+    
+    // 点击背景关闭查看器
+    document.getElementById('imageViewer')?.addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeImageViewer();
+      }
+    });
+    
+    // ESC键关闭查看器
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeImageViewer();
+      }
+    });
+    
+    
+    
+    // 代码块复制功能
+    window.copyCodeBlock = function(codeBlockId, buttonElement) {
+      const codeBlock = document.getElementById(codeBlockId);
+      if (!codeBlock) {
+        alert('找不到代码块');
+        return;
+      }
+      
+      // 从data属性获取原始代码
+      const code = codeBlock.getAttribute('data-code') || '';
+      const decodedCode = code.replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+      
+      // 更新按钮状态的函数
+      function updateButtonState(success) {
+        if (buttonElement && success) {
+          const originalText = buttonElement.textContent || '复制';
+          const originalBg = buttonElement.style.background || '#3b82f6';
+          buttonElement.textContent = '已复制';
+          buttonElement.style.background = '#10b981';
+          setTimeout(function() {
+            buttonElement.textContent = originalText;
+            buttonElement.style.background = originalBg;
+          }, 2000);
+        }
+      }
+      
+      // 复制到剪贴板
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(decodedCode).then(function() {
+          updateButtonState(true);
+        }).catch(function(err) {
+          console.error('复制失败:', err);
+          alert('复制失败，请手动复制');
+        });
+      } else {
+        // 降级方案：使用textarea
+        const textarea = document.createElement('textarea');
+        textarea.value = decodedCode;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+          document.execCommand('copy');
+          updateButtonState(true);
+        } catch (err) {
+          console.error('复制失败:', err);
+          alert('复制失败，请手动复制');
+        }
+        document.body.removeChild(textarea);
+      }
+      // 图片放大缩小功能
+      document.querySelectorAll('img:not(.link-card img)').forEach(img => {
+        let isResizing = false;
+        let startX, startWidth;
+
+        img.addEventListener('mousedown', function(e) {
+          isResizing = true;
+          startX = e.clientX;
+          startWidth = img.offsetWidth;
+          e.preventDefault();
+          img.style.cursor = 'nwse-resize';
+        });
+
+        window.addEventListener('mousemove', function(e) {
+          if (!isResizing) return;
+          const deltaX = e.clientX - startX;
+          img.style.width = (startWidth + deltaX) + 'px';
+          img.style.height = 'auto'; // 保持比例
+        });
+
+        window.addEventListener('mouseup', function() {
+          if (isResizing) {
+            isResizing = false;
+            img.style.cursor = 'pointer';
+          }
+        });
+      });
+    };
+  </script>
+</body>
+</html>
